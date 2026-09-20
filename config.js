@@ -3,5 +3,5 @@
 window.DRIFT_SUPABASE = {
   url: 'https://voxwwibdlkukjpgpnnqo.supabase.co',
   publishableKey: 'sb_publishable_nUyIohLnO0kiWmpw4xo_oA_KT7_AzxQ',
-  guestbookEnabled: false
+  guestbookEnabled: true
 };
