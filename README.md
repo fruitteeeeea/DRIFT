@@ -8,6 +8,8 @@
 2. 将项目的 publishable key 填入 [`config.js`](./config.js)。
 3. 绝不要在前端放置 secret key 或 legacy `service_role` key。
 
+将 `config.js` 中的 `guestbookEnabled` 设为 `false` 可同步隐藏留言输入界面；数据库写入权限仍应通过 `REVOKE INSERT` 单独关闭。
+
 留言表仅向访客开放读取可见留言和创建 1–120 字留言；更新、删除和可见性管理不对公网开放。
 
 ## GitHub Pages
