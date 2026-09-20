@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#185c6b"><meta name="description" content="一座可以旋转、钓鱼、听海的小小 3D 海岛。没有待办事项，只有慢慢流逝的日落。"><title>DRIFT 漂流小岛 — 把时间交给海浪</title>
+<style>
+:root{--cream:#f1e7cf;--muted:rgba(241,231,207,.56);--ink:#2f5359;--coral:#edaf88;--panel:#f4eddd;--line:rgba(241,231,207,.2);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--cream);color-scheme:light}
+*{box-sizing:border-box}body,html{width:100%;height:100%;margin:0;overflow:hidden;background:#155a6b}button,input,textarea{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #f6b58c;outline-offset:5px}button{color:inherit}button:disabled{cursor:wait}button svg{pointer-events:none}button[aria-pressed=true]{background:rgba(211,157,112,.2)}[hidden]{display:none!important}#world{display:block;position:fixed;inset:0;width:100%;height:100%;touch-action:none;cursor:grab}#world.dragging{cursor:grabbing}.ui{position:fixed;inset:0;pointer-events:none;z-index:2;transition:opacity .5s}.ui button,.ui a,.ui input{pointer-events:auto}svg{display:block}.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}.header{position:absolute;top:32px;left:38px;right:38px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:15px}.brand-symbol{color:var(--coral);width:32px;height:32px}.brand-name{font:29px/1 Georgia,"Times New Roman",serif;letter-spacing:5px}.brand-name b{font:9px/1.5 sans-serif;display:block;letter-spacing:3px;margin-top:6px;color:var(--muted)}.brand-line{height:29px;width:1px;background:var(--line);margin:0 5px}.brand-sub{font-size:11px;letter-spacing:2px;color:rgba(241,231,207,.8)}.header-right{display:flex;align-items:center;gap:13px}.weather{display:flex;align-items:center;gap:9px;font-size:10px;letter-spacing:1px;margin-right:13px;color:rgba(241,231,207,.75)}.weather-dot{width:5px;height:5px;border-radius:50%;background:#e8b387;box-shadow:0 0 12px #e7b28155}.weather time{font:11px monospace;padding-left:10px;border-left:1px solid var(--line);margin-left:4px}.icon-button{display:grid;place-items:center;border:1px solid var(--line);background:rgba(18,67,78,.1);width:39px;height:39px;border-radius:50%;transition:background .2s,transform .2s}.icon-button:hover{background:rgba(239,221,190,.14);transform:translateY(-1px)}.header .icon{width:17px;height:17px}.left-caption{position:absolute;bottom:39px;left:39px;pointer-events:none}.eyebrow{font-size:8px;font-weight:500;letter-spacing:3.2px;margin-bottom:17px;opacity:.65}.left-caption h1{font-size:29px;line-height:1.5;letter-spacing:3.5px;font-weight:400;margin:0 0 15px;color:#f1debf}.caption-note{font-size:9px;letter-spacing:1.3px;color:var(--muted);line-height:1.9}.caption-note::before{content:"";display:inline-block;width:20px;height:1px;background:var(--muted);vertical-align:middle;margin-right:9px}.toolbar{position:absolute;bottom:33px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:8px;background:rgba(247,238,219,.96);box-shadow:0 12px 40px rgba(12,47,57,.16),inset 0 1px 0 #fff6;border:1px solid #fffa;border-radius:17px;color:var(--ink);backdrop-filter:blur(20px);pointer-events:auto}.tool-button{border:0;background:none;padding:7px 12px;min-width:57px;height:49px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:background .2s,transform .2s;position:relative}.tool-button:hover{background:#dcdcca66}.tool-button span{font-size:9px;letter-spacing:.8px;white-space:nowrap}.tool-button .icon{width:20px;height:20px}.tool-divider{height:28px;width:1px;background:#657c6429;margin:0 2px}.fish-button{height:49px;min-width:113px;padding:0 20px;display:flex;align-items:center;justify-content:center;gap:9px;background:#355b60;color:#f5e7ca;border:1px solid transparent;border-radius:10px;transition:background .2s;white-space:nowrap}.fish-button:hover{background:#426c6c}.fish-button span{font-size:12px;letter-spacing:1px}.fish-button:disabled{background:#53716f;color:#d8dac4}.fish-button.bite{background:#b66f47;animation:bite 1s infinite}.journal-badge{position:absolute;right:8px;top:3px;display:grid;place-items:center;font:8px monospace;width:13px;height:13px;border-radius:50%;background:#d7b791;color:#3b5e5c;border:2px solid #f4eddd}.toolbar-hint{position:absolute;left:50%;bottom:107px;transform:translateX(-50%);font-size:9px;color:rgba(241,231,207,.55);letter-spacing:1.1px;white-space:nowrap;display:flex;align-items:center;gap:7px}.toolbar-hint .icon{width:12px;height:12px}.side-controls{position:absolute;right:34px;top:47%;display:flex;flex-direction:column;align-items:center;gap:13px}.zoom-controls{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:rgba(18,67,78,.09)}.zoom-controls button{width:35px;height:37px;display:grid;place-items:center;background:transparent;border:0}.zoom-controls button+button{border-top:1px solid var(--line)}.zoom-controls button:hover{background:#f1e7cf22}.zoom-controls .icon{width:15px;height:15px}.side-controls>.icon-button{width:36px;height:36px}.side-controls>.icon-button .icon{width:15px;height:15px}.compass{position:relative;width:45px;height:52px;margin-bottom:9px;display:flex;justify-content:center;align-items:end}.compass span{position:absolute;top:0;font:9px Georgia;opacity:.65}.compass svg{width:30px;height:30px;opacity:.75;transition:transform .1s linear}.right-caption{position:absolute;right:39px;bottom:36px;text-align:right}.right-caption .number{font:10px Georgia;letter-spacing:2px;margin-bottom:11px;opacity:.67}.right-caption p{margin:0 0 6px;font-size:10px;letter-spacing:1.3px;color:var(--muted)}.right-caption button{border:0;background:none;padding:8px 0 0;display:flex;gap:6px;align-items:center;margin-left:auto;font-size:9px;letter-spacing:1.2px;opacity:.6}.right-caption .icon{width:13px;height:13px}.right-caption button:hover{opacity:1}#toast{position:fixed;left:50%;top:96px;transform:translate(-50%,-8px);z-index:5;pointer-events:none;display:flex;align-items:center;gap:10px;max-width:calc(100% - 36px);width:max-content;padding:11px 17px;border:1px solid rgba(236,227,203,.2);background:rgba(29,74,81,.73);color:#efe3c9;border-radius:8px;backdrop-filter:blur(12px);opacity:0;transition:opacity .4s,transform .4s;font-size:11px;letter-spacing:.55px;box-shadow:0 5px 25px #123b4011}#toast.visible{opacity:1;transform:translate(-50%,0)}#toast .icon{width:14px;height:14px;flex-shrink:0;color:#dcb48e}#tooltip{position:fixed;z-index:4;pointer-events:none;font-size:10px;letter-spacing:.6px;background:rgba(241,231,207,.95);color:#36585b;border:1px solid #fff5;border-radius:6px;padding:9px 12px;box-shadow:0 4px 20px #103d4933}.immersive .ui{opacity:0;visibility:hidden}.immersive #toast{top:25px}#exitImmersive{position:fixed;z-index:8;bottom:25px;left:50%;transform:translateX(-50%);border:1px solid #fff3;background:#1b505b99;color:#eee2c8;border-radius:20px;padding:10px 18px;font-size:10px;letter-spacing:1px;backdrop-filter:blur(10px);opacity:.55}#exitImmersive:hover{opacity:1}
+dialog{color:var(--ink);border:1px solid #ffffffc7;border-radius:19px;background:var(--panel);padding:30px;max-width:calc(100vw - 36px);box-shadow:0 30px 110px #073e4e55;outline:none;width:410px}dialog::backdrop{background:#073a463c;backdrop-filter:blur(5px)}.dialog-close{position:absolute;right:20px;top:20px;background:none;border:0;color:#526b66;padding:5px;border-radius:50%}.dialog-close .icon{width:17px;height:17px}.dialog-close:hover{background:#254f5111}.panel-eyebrow{font-size:8px;letter-spacing:2.5px;color:#718078;margin-bottom:12px}.panel-title{font-size:23px;font-weight:400;letter-spacing:1px;margin:0 0 10px}.panel-desc{font-size:11px;line-height:1.9;color:#7c857a;margin:0}.palette-options{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:24px 0 25px}.palette-card{padding:8px 8px 11px;background:#eee7d5;border:1px solid transparent;border-radius:11px;color:#546c61;text-align:center}.palette-card[aria-pressed=true]{border-color:#a89b7a;background:#e8e3cf}.palette-card span{font-size:10px;letter-spacing:1px;display:block;margin-top:9px}.mini-landscape{height:63px;border-radius:6px;position:relative;overflow:hidden;background:linear-gradient(#91b1ac 0 55%,#689e9c 55%);box-shadow:inset 0 0 0 1px #00000004}.mini-landscape:before{content:"";position:absolute;left:42%;top:16px;border-radius:50%;width:16px;height:16px;background:#edd8a5}.mini-landscape:after{content:"";position:absolute;left:21%;right:21%;height:22px;bottom:7px;background:#ccba87;border-radius:50% 45% 48% 30%}.mini-landscape.sunset{background:linear-gradient(#caa09d 0 55%,#47898b 55%)}.mini-landscape.sunset:before{background:#f1bf80;top:24px}.mini-landscape.sunset:after{background:#dfab8a}.mini-landscape.night{background:linear-gradient(#415565 0 55%,#34596a 55%)}.mini-landscape.night:before{background:#dddec2;box-shadow:5px -3px 0 #415565;left:60%}.mini-landscape.night:after{background:#827b83}.setting-row{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:20px;font-size:11px;letter-spacing:.6px}.setting-row small{color:#8b8e7e;font-size:9px}.range{width:100%;height:4px;margin-top:18px;accent-color:#4f7877;cursor:pointer}input[type=checkbox]{accent-color:#3d6767;width:16px;height:16px;cursor:pointer}.setting-line{height:1px;background:#3a625315;margin-top:24px}.panel-footer{margin:24px 0 0;font-size:9px;letter-spacing:.6px;color:#949381;line-height:1.9}.help-list{padding:5px 0;margin:20px 0;display:grid;gap:18px}.help-row{display:flex;align-items:start;gap:13px}.help-row .icon{width:19px;height:19px;flex-shrink:0;color:#9d8e70;margin-top:1px}.help-row strong{font-size:11px;font-weight:500;display:block;margin-bottom:5px;letter-spacing:.5px}.help-row p{font-size:10px;color:#819085;margin:0;line-height:1.8}.keys{display:flex;gap:15px;color:#778575;font-size:9px}.keys kbd{background:#e7e3d2;padding:3px 5px;border:1px solid #d1d5c5;border-radius:4px;margin-right:4px;font:9px monospace}#journalDialog{width:490px}.journal-header{display:flex;align-items:center;justify-content:space-between;margin-right:24px}.journal-progress{font:21px Georgia;color:#ab906a}.fish-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:24px}.fish-tile{padding:12px 4px 15px;text-align:center;border:1px dashed #b8bca850;border-radius:10px;background:#eae6d72b}.fish-tile.found{border:1px solid #d7d9c5;background:#e8e9d659}.fish-illustration{height:60px;position:relative;display:flex;align-items:center;justify-content:center;color:var(--fish-color);opacity:.45}.found .fish-illustration{opacity:1}.fish-illustration svg{width:84px;height:55px}.fish-illustration span{position:absolute;font:22px Georgia;color:#8d9988}.fish-tile strong{font-size:10px;font-weight:500;letter-spacing:.5px;display:block;margin:4px 0 6px}.fish-tile small{font-size:8px;letter-spacing:.4px;color:#8c9786}.journal-bottom{display:flex;justify-content:space-between;margin-top:23px;font-size:9px;color:#8b937e;line-height:1.8}#noteInput{width:100%;border:1px solid #d5d3bb;border-radius:8px;margin:24px 0 15px;padding:14px;background:#fbf5e5;color:#47655c;resize:none;height:125px;font-size:12px;line-height:1.9;letter-spacing:1px}.note-save{width:100%;background:#3c6263;border:0;border-radius:8px;padding:13px;color:#ede6cf;font-size:11px;letter-spacing:2px}#catchCard{position:fixed;right:34px;bottom:157px;z-index:5;background:var(--panel);color:var(--ink);border:1px solid #fff8;border-radius:16px;width:265px;padding:23px;box-shadow:0 14px 60px #083b4940;animation:card-in .45s ease-out}.catch-eyebrow{font-size:8px;letter-spacing:1.1px;color:#a88a63}.catch-fish{height:91px;display:flex;justify-content:center;align-items:center;margin:7px 0}.catch-fish svg{width:148px;height:89px;filter:drop-shadow(0 10px 5px #2b6e4c11)}#catchName{font-size:21px;letter-spacing:1px;margin:0 0 8px;font-weight:400}.catch-details{display:flex;justify-content:space-between;font-size:8px;color:#899781;letter-spacing:.8px}.release-fish{width:100%;margin-top:21px;padding:10px;border:1px solid #75928144;border-radius:7px;background:#e6e7d369;color:#506a61;font-size:10px;letter-spacing:1px}.catch-close{position:absolute;right:12px;top:12px;background:none;border:0;color:#829384}.catch-close .icon{width:14px;height:14px}#loading{position:fixed;inset:0;background:#175b6a;z-index:20;display:flex;flex-direction:column;justify-content:center;align-items:center;transition:opacity .6s,visibility .6s}#loading.done{opacity:0;visibility:hidden}.loading-mark{width:65px;height:65px;color:#e5b794;margin-bottom:26px;animation:float 3s ease-in-out infinite}#loadTitle{font:30px Georgia;letter-spacing:7px;margin:0 0 16px;color:#eedec0}#loadSubtitle{font-size:11px;letter-spacing:2px;color:#b1c6b9;max-width:420px;text-align:center;line-height:2;padding:0 24px}#loading.error #loadTitle{font:20px sans-serif;letter-spacing:1px}#retryButton{margin-top:20px;border:1px solid #ead6b658;border-radius:20px;background:transparent;padding:10px 20px;color:#ead6b6;font-size:11px}.loading-line{width:90px;height:1px;background:#ecd2ac22;margin-top:25px;overflow:hidden}.loading-line:after{content:"";display:block;width:40%;height:100%;background:#dcb389;animation:load 1.6s infinite}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}@keyframes load{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}@keyframes float{50%{transform:translateY(-7px) rotate(4deg)}}@keyframes bite{50%{box-shadow:0 0 0 5px #bc835028}}@keyframes card-in{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:none}}
+@media(min-width:1650px){.left-caption h1{font-size:36px}.header{top:38px;left:45px;right:45px}.left-caption{left:45px;bottom:45px}.right-caption{right:45px;bottom:45px}}
+@media(max-width:1080px){.left-caption h1{font-size:22px;letter-spacing:2px}.left-caption{left:26px;bottom:31px}.right-caption{right:26px}.right-caption p{font-size:9px}.toolbar{gap:2px}.tool-button{padding:7px 9px;min-width:50px}.fish-button{padding:0 15px;min-width:102px}.header{left:26px;right:26px;top:26px}.brand-sub{display:none}.brand-line{display:none}.caption-note{font-size:8px}.eyebrow{font-size:7px;letter-spacing:2px}}
+@media(max-width:800px){.left-caption{bottom:137px;left:26px}.left-caption .eyebrow{margin-bottom:8px}.left-caption h1{font-size:23px;line-height:1.45;margin-bottom:0}.caption-note{display:none}.right-caption{bottom:137px}.right-caption p{display:none}.right-caption .number{margin-bottom:5px}.toolbar{bottom:28px}.toolbar-hint{bottom:103px}.side-controls{right:21px;top:40%}.header-right{gap:9px}.weather{margin-right:3px;font-size:9px}.weather time{display:none}.header .icon-button{width:34px;height:34px}#catchCard{bottom:130px;right:22px}}
+@media(max-width:520px){.header{top:22px;left:20px;right:20px}.brand-name{font-size:25px;letter-spacing:4px}.brand-name b{font-size:7px;letter-spacing:2.5px;margin-top:5px}.brand{gap:10px}.brand-symbol{width:27px;height:27px}.weather{display:none}.header-right{gap:8px}.header .icon-button{width:34px;height:34px}.header .icon{width:16px;height:16px}.left-caption{left:22px;bottom:137px}.left-caption h1{font-size:22px;letter-spacing:2px}.eyebrow{font-size:6px;letter-spacing:2.4px}.right-caption{right:22px;bottom:141px}.right-caption .number{font-size:9px}.right-caption button{font-size:8px}.toolbar{bottom:max(22px,env(safe-area-inset-bottom));padding:7px;gap:1px;border-radius:15px;max-width:calc(100vw - 26px)}.fish-button{min-width:99px;padding:0 12px;height:46px}.fish-button span{font-size:11px}.tool-button{min-width:48px;height:46px;padding:6px 8px}.tool-button span{font-size:8px}.tool-button .icon{width:19px;height:19px}.toolbar-hint{bottom:97px;font-size:8px;letter-spacing:.4px}.side-controls{right:14px;top:31%;gap:10px}.compass{display:none}.side-controls .icon-button{width:30px;height:30px}.zoom-controls button{width:29px;height:32px}.side-controls .icon{width:13px;height:13px}#toast{top:85px;padding:10px 13px;font-size:10px;line-height:1.8;text-align:center}dialog{padding:25px;max-width:calc(100vw - 28px)}.panel-title{font-size:21px}.fish-grid{gap:6px}.fish-tile strong{font-size:9px}.fish-tile small{font-size:7px}.fish-illustration svg{width:70px}#catchCard{left:50%;right:auto;transform:translateX(-50%);bottom:128px;width:255px;animation:none}.right-caption .number{opacity:.5}.toolbar .tool-divider{margin:0 2px}.brand-sub{display:none}}
+@media(max-width:380px){.tool-button{min-width:42px;padding:6px}.fish-button{min-width:90px;padding:0 10px}.toolbar{gap:0}.toolbar-hint{font-size:7px}.left-caption h1{font-size:20px}.right-caption{display:none}}
+@media(max-height:650px) and (min-width:650px){.left-caption h1{font-size:19px}.left-caption .eyebrow{display:none}.header{top:20px}.toolbar{bottom:20px}.toolbar-hint{bottom:91px}.left-caption{bottom:25px}.right-caption{bottom:25px}.side-controls{top:32%}#toast{top:72px}dialog{max-height:90vh;overflow:auto}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.001s!important;transition-duration:.001s!important}}
+/* Shared guestbook backed by Supabase. */
+#noteDialog{width:520px}#noteInput{margin:20px 0 10px;height:96px}.note-save:disabled{opacity:.65}.note-feed-title{font-size:9px;letter-spacing:1.5px;color:#718078;margin:22px 0 10px}.note-feed{display:grid;gap:8px;max-height:190px;overflow:auto;padding-right:4px}.note-item{border:1px solid #d5d8c5;background:#ebe8d9;border-radius:9px;padding:11px 12px}.note-item p{margin:0;color:#536b63;font-size:11px;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere}.note-item time{display:block;margin-top:6px;color:#969886;font-size:8px;letter-spacing:.5px}.note-empty{color:#909687;font-size:10px;text-align:center;padding:18px 0}.note-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+</style>
+</head>
+<body>
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs>
+<symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 7h5l2-3h4l2 3h5v13H3Z"/><circle cx="12" cy="13" r="4"/></symbol><symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 10h4l5-4v12l-5-4H4Z M17 8q6 4 0 8 M17 11q2 1 0 2"/></symbol><symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 10h4l5-4v12l-5-4H4Z M17 9l5 6 M22 9l-5 6"/></symbol><symbol id="i-fish" viewBox="0 0 24 24"><path d="M3 12q7-9 14-3l5-5-1 8 1 8-5-5q-7 6-14-3Z M9 8q5 4 0 8"/><circle cx="7" cy="11" r=".7"/></symbol><symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2 M12 20v2 M2 12h2 M20 12h2 M5 5l1 1 M18 18l1 1 M19 5l-1 1 M6 18l-1 1"/></symbol><symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5C8 2 3 4 3 4v15s5-2 9 1c4-3 9-1 9-1V4s-5-2-9 1Z M12 5v15 M6 8h3 M15 8h3 M6 11h3 M15 11h3"/></symbol><symbol id="i-orbit" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="10" ry="5" transform="rotate(-28 12 12)"/><circle cx="12" cy="12" r="3"/><path d="M19 3l1 4-4 1"/></symbol><symbol id="i-expand" viewBox="0 0 24 24"><path d="M3 9V3h6 M15 3h6v6 M21 15v6h-6 M9 21H3v-6"/></symbol><symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8 M6 9v12h12V9 M10 21v-7h4v7"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14 M5 12h14"/></symbol><symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol><symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 0 1 6 0c0 3-3 2-3 5 M12 17h.01"/></symbol><symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12 M18 6 6 18"/></symbol><symbol id="i-wave" viewBox="0 0 24 24"><path d="M2 9q3-5 6 0t6 0 6 0 M2 15q3-5 6 0t6 0 6 0"/></symbol><symbol id="i-drag" viewBox="0 0 24 24"><path d="M9 13V5a2 2 0 0 1 4 0v7-3a2 2 0 0 1 4 0v4-1a2 2 0 0 1 4 0v4q0 6-7 6-4 0-6-4l-4-6q-1-2 1-3l4 4Z"/></symbol><symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2 2.8 7.2L22 12l-7.2 2.8L12 22l-2.8-7.2L2 12l7.2-2.8Z"/></symbol><symbol id="i-hook" viewBox="0 0 24 24"><path d="M18 2 6 18 M15 5l4 4 M19 9v8a4 4 0 0 1-8 0v-3l3 3"/></symbol>
+</defs></svg>
+<canvas id="world" aria-label="可互动的三维海岛。拖动旋转，滚轮缩放。点击小船、篝火、招牌或火烈鸟互动。" tabindex="0"></canvas>
+<div class="ui">
+ <header class="header"><div class="brand"><svg class="brand-symbol" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" aria-hidden="true"><path d="M20 5v30M5 20h30M9.4 9.4l21.2 21.2M30.6 9.4 9.4 30.6"/><circle cx="20" cy="20" r="4" fill="currentColor" stroke="none"/></svg><div class="brand-name">DRIFT<b>A LITTLE ESCAPE</b></div><div class="brand-line"></div><div class="brand-sub">一座不赶时间的小岛</div></div><div class="header-right"><div class="weather"><i class="weather-dot"></i><span id="weatherWord">日落微风</span><time id="clock">17:42</time></div><button id="soundButton" class="icon-button" title="开启海浪声音（M）" aria-label="开启或关闭海浪声音" aria-pressed="false"><svg id="soundOff" class="icon"><use href="#i-mute"/></svg><svg id="soundOn" class="icon" style="display:none"><use href="#i-sound"/></svg></button><button id="photoButton" class="icon-button" title="保存一张海岛明信片" aria-label="保存海岛截图"><svg class="icon"><use href="#i-camera"/></svg></button></div></header>
+ <section class="left-caption" aria-label="海岛主题"><div class="eyebrow">SOMEWHERE, AT YOUR OWN PACE.</div><h1>把时间，<br>交给海浪。</h1><div class="caption-note">不用出发，也能抵达远方</div></section>
+ <div class="toolbar-hint"><svg class="icon"><use href="#i-drag"/></svg>拖动旋转<span>·</span>滚轮缩放<span>·</span>点一点岛上的小东西</div>
+ <nav class="toolbar" aria-label="海岛互动工具"><button class="fish-button" id="fishButton" title="抛竿，等鱼咬钩后点击收竿（F）"><svg class="icon"><use href="#i-hook"/></svg><span id="fishLabel">去钓鱼</span></button><div class="tool-divider"></div><button id="moodButton" class="tool-button" title="调整日夜与海风"><svg class="icon"><use href="#i-sun"/></svg><span id="timeWord">日落</span></button><button id="journalButton" class="tool-button" title="查看海湾图鉴"><svg class="icon"><use href="#i-book"/></svg><span>图鉴</span><b id="journalCount" class="journal-badge">0</b></button><button id="orbitButton" class="tool-button" aria-pressed="false" title="让镜头自动环游小岛"><svg class="icon"><use href="#i-orbit"/></svg><span>环游</span></button><div class="tool-divider"></div><button id="immersiveButton" class="tool-button" title="收起界面，沉浸看海（H）"><svg class="icon"><use href="#i-expand"/></svg><span>沉浸</span></button></nav>
+ <div class="side-controls"><div class="compass" aria-hidden="true"><span>N</span><svg id="compassNeedle" viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="none" stroke="currentColor" stroke-width=".7" opacity=".5"/><path d="M20 5 25 24 20 21 15 24Z" fill="#eeb18b"/><path d="M20 35 15 16 20 19 25 16Z" fill="#e4dcc5" opacity=".7"/></svg></div><div class="zoom-controls"><button id="zoomIn" aria-label="放大" title="放大"><svg class="icon"><use href="#i-plus"/></svg></button><button id="zoomOut" aria-label="缩小" title="缩小"><svg class="icon"><use href="#i-minus"/></svg></button></div><button id="resetButton" class="icon-button" aria-label="回到初始视角" title="回到初始视角（R）"><svg class="icon"><use href="#i-home"/></svg></button></div>
+ <footer class="right-caption"><div class="number">EST. NOW &nbsp; / &nbsp; NO. 008</div><p>海风刚好，今天不赶路。</p><button id="helpButton"><svg class="icon"><use href="#i-help"/></svg>小岛游玩指南</button></footer>
+</div>
+<div id="toast" role="status" aria-live="polite"><svg class="icon"><use href="#i-wave"/></svg><span id="toastText"></span></div><div id="tooltip" hidden></div><button id="exitImmersive" hidden>返回小岛界面 &nbsp; · &nbsp; H</button>
+<dialog id="moodDialog" aria-labelledby="moodTitle"><button class="dialog-close" data-close="moodDialog" aria-label="关闭"><svg class="icon"><use href="#i-close"/></svg></button><div class="panel-eyebrow">THE LIGHT, THE BREEZE.</div><h2 class="panel-title" id="moodTitle">今天，是什么颜色？</h2><p class="panel-desc">选一段喜欢的光，让时间停在这里。</p><div class="palette-options"><button class="palette-card" data-time="dawn" aria-pressed="false"><div class="mini-landscape"></div><span>清晨 · 06:18</span></button><button class="palette-card" data-time="sunset" aria-pressed="true"><div class="mini-landscape sunset"></div><span>日落 · 17:42</span></button><button class="palette-card" data-time="night" aria-pressed="false"><div class="mini-landscape night"></div><span>月夜 · 21:06</span></button></div><label class="setting-row" for="windRange"><span>海风</span><small id="windValue">刚好</small></label><input id="windRange" class="range" type="range" min="0" max="2" step=".05" value="1" aria-label="海风强度"><div class="setting-line"></div><label class="setting-row" for="motionSwitch"><span>让小岛慢慢呼吸</span><input id="motionSwitch" type="checkbox" checked></label><p class="panel-footer">关闭呼吸后，海浪、旗帜与居民会暂停日常动画。<br>旋转视角和钓鱼依然可用。</p></dialog>
+<dialog id="journalDialog" aria-labelledby="journalTitle"><button class="dialog-close" data-close="journalDialog" aria-label="关闭"><svg class="icon"><use href="#i-close"/></svg></button><div class="panel-eyebrow">LITTLE ENCOUNTERS</div><div class="journal-header"><h2 class="panel-title" id="journalTitle">海湾图鉴</h2><span class="journal-progress" id="journalProgress">0 / 6</span></div><p class="panel-desc">不是每一竿都有收获，但每次等待都算数。</p><div id="fishGrid" class="fish-grid"></div><div class="journal-bottom"><span>已经和 <b id="catchTotal">0</b> 位海洋朋友打过招呼</span><span>记录仅保存在本浏览器</span></div></dialog>
+<dialog id="helpDialog" aria-labelledby="helpTitle"><button class="dialog-close" data-close="helpDialog" aria-label="关闭"><svg class="icon"><use href="#i-close"/></svg></button><div class="panel-eyebrow">WELCOME, WANDERER.</div><h2 class="panel-title" id="helpTitle">小岛没有标准玩法。</h2><p class="panel-desc">不赶路的时候，才会遇见小小的惊喜。</p><div class="help-list"><div class="help-row"><svg class="icon"><use href="#i-drag"/></svg><div><strong>换个角度，看看世界</strong><p>鼠标拖动或单指滑动可旋转；滚轮或双指捏合可缩放。点小房子，回到初始视角。</p></div></div><div class="help-row"><svg class="icon"><use href="#i-hook"/></svg><div><strong>钓一段安静的时间</strong><p>点「去钓鱼」，等浮漂动起来，再及时点「收竿」。六种虚构的海洋朋友会记入图鉴。</p></div></div><div class="help-row"><svg class="icon"><use href="#i-star"/></svg><div><strong>向小岛打个招呼</strong><p>点小船出海、点篝火开关、点宝箱开合。火烈鸟、小店和大招牌，也在等你发现。</p></div></div><div class="help-row"><svg class="icon"><use href="#i-camera"/></svg><div><strong>留下一张明信片</strong><p>右上角相机保存不带操作界面的 PNG 图片；声音按钮开启合成海浪声。</p></div></div></div><div class="keys"><span><kbd>R</kbd>归位</span><span><kbd>H</kbd>沉浸</span><span><kbd>M</kbd>声音</span><span><kbd>F</kbd>钓鱼</span></div><p class="panel-footer">建议使用支持 WebGL 2 的桌面浏览器。<br>这是一个根据参考图手工建模的互动海岛，不是原作的游戏资产。</p></dialog>
+<dialog id="noteDialog" aria-labelledby="noteTitle"><button class="dialog-close" data-close="noteDialog" aria-label="关闭"><svg class="icon"><use href="#i-close"/></svg></button><div class="panel-eyebrow">A NOTE TO THE SEA</div><h2 class="panel-title" id="noteTitle">写给大海的便签</h2><p class="panel-desc">把一件心事留在岸边，也读一读陌生人交给海风的话。</p><form id="noteForm"><label for="noteInput" class="sr-only">便签内容</label><textarea id="noteInput" maxlength="120" required placeholder="今天想把什么留在岸边？" aria-describedby="notePrivacy"></textarea><label class="note-honeypot" aria-hidden="true">请留空<input id="noteWebsite" tabindex="-1" autocomplete="off"></label><button class="note-save" type="submit">留在这座小岛</button></form><p class="panel-footer" id="notePrivacy">最多 120 字。留言会公开显示，请勿填写隐私信息。</p><div class="note-feed-title">RECENT NOTES · 岸边的便签</div><div id="noteFeed" class="note-feed" aria-live="polite"><div class="note-empty">正在听海风捎来消息…</div></div></dialog>
+<aside id="catchCard" hidden aria-live="polite"><button id="catchClose" class="catch-close" aria-label="关闭捕获卡片"><svg class="icon"><use href="#i-close"/></svg></button><div id="catchNew" class="catch-eyebrow">NEW DISCOVERY · 新发现</div><div id="catchFish" class="catch-fish"><svg viewBox="0 0 100 60" aria-hidden="true"><path d="M15 30Q37 4 67 25L88 10 82 31 89 50 65 37Q36 59 15 30Z" fill="currentColor"/><path d="M40 14L57 6 57 18M43 45L55 53 57 42" fill="currentColor"/><circle cx="31" cy="27" r="3" fill="#f7eedb"/><path d="M43 22q8 10 0 18" fill="none" stroke="#f7eedb" stroke-width="2" opacity=".6"/></svg></div><h2 id="catchName"></h2><div class="catch-details"><span id="catchEnglish"></span><span id="catchSize"></span></div><button class="release-fish" id="releaseFish">记住这次相遇，放它回海里 &nbsp; ↗</button></aside>
+<div id="loading"><svg class="loading-mark" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 35h43l-9 13H22Z M31 9v26 M31 11 48 29H31 M10 52q6-5 12 0t12 0 12 0 12 0"/></svg><h1 id="loadTitle">DRIFT</h1><p id="loadSubtitle">把日落、小船和海风，放进你的浏览器。</p><div class="loading-line"></div><button id="retryButton" hidden onclick="location.reload()">重新进入海湾</button></div>
+<noscript><div style="position:fixed;inset:0;z-index:99;background:#175b6a;color:#f2e5c8;display:grid;place-items:center;padding:30px">请在浏览器中启用 JavaScript 后重新打开这座海岛。</div></noscript>
+<script src="config.js"></script>
+<script>/* Drift Island — a small, dependency-free WebGL2 diorama renderer.
+   Column-major matrices; all scene geometry is authored in meters, Y up. */
+'use strict';
+const TAU = Math.PI * 2;
+const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+const mix = (a,b,t) => a+(b-a)*t;
+const V = {
+ add:(a,b)=>a.map((v,i)=>v+b[i]), sub:(a,b)=>a.map((v,i)=>v-b[i]),
+ mul:(a,n)=>a.map(v=>v*n), dot:(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0),
+ cross:(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],
+ norm:a=>{let l=Math.hypot(...a)||1;return a.map(v=>v/l)},
+};
+const M = {
+ id:()=>[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+ mul:(a,b)=>{let o=new Array(16).fill(0);for(let c=0;c<4;c++)for(let r=0;r<4;r++)for(let k=0;k<4;k++)o[c*4+r]+=a[k*4+r]*b[c*4+k];return o},
+ tr:(x=0,y=0,z=0)=>[1,0,0,0,0,1,0,0,0,0,1,0,x,y,z,1],
+ sc:(x=1,y=x,z=x)=>[x,0,0,0,0,y,0,0,0,0,z,0,0,0,0,1],
+ rx:a=>[1,0,0,0,0,Math.cos(a),Math.sin(a),0,0,-Math.sin(a),Math.cos(a),0,0,0,0,1],
+ ry:a=>[Math.cos(a),0,-Math.sin(a),0,0,1,0,0,Math.sin(a),0,Math.cos(a),0,0,0,0,1],
+ rz:a=>[Math.cos(a),Math.sin(a),0,0,-Math.sin(a),Math.cos(a),0,0,0,0,1,0,0,0,0,1],
+ point:(m,p)=>[m[0]*p[0]+m[4]*p[1]+m[8]*p[2]+m[12],m[1]*p[0]+m[5]*p[1]+m[9]*p[2]+m[13],m[2]*p[0]+m[6]*p[1]+m[10]*p[2]+m[14]],
+ compose:(p=[0,0,0],r=[0,0,0],s=[1,1,1])=>M.mul(M.tr(...p),M.mul(M.ry(r[1]),M.mul(M.rx(r[0]),M.mul(M.rz(r[2]),M.sc(...s))))),
+ ortho:(l,r,b,t,n,f)=>[2/(r-l),0,0,0,0,2/(t-b),0,0,0,0,-2/(f-n),0,-(r+l)/(r-l),-(t+b)/(t-b),-(f+n)/(f-n),1],
+ look:(eye,at,up=[0,1,0])=>{let z=V.norm(V.sub(eye,at)),x=V.norm(V.cross(up,z)),y=V.cross(z,x);return [x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-V.dot(x,eye),-V.dot(y,eye),-V.dot(z,eye),1]},
+};
+function rgb(h,k=1){if(Array.isArray(h))return h.map(v=>v*k);let v=parseInt(h.replace('#',''),16);return [v>>16&255,v>>8&255,v&255].map(v=>Math.pow(v/255,2.2)*k)}
+let seed = 987312;
+function rand(a=0,b=1){seed=(Math.imul(1664525,seed)+1013904223)|0;return a+((seed>>>0)/4294967296)*(b-a)}
+function choose(a){return a[Math.floor(rand(0,a.length))]}
+class Builder {
+ constructor(){this.data=[];this.stack=[M.id()]}
+ push(p=[0,0,0],r=[0,0,0],s=[1,1,1]){this.stack.push(M.mul(this.stack.at(-1),M.compose(p,r,s)));return this}
+ pop(){this.stack.pop();return this}
+ tri(a,b,c,col,em=0,uvs=null){
+  let m=this.stack.at(-1);a=M.point(m,a);b=M.point(m,b);c=M.point(m,c);
+  let n=V.norm(V.cross(V.sub(b,a),V.sub(c,a))),co=rgb(col),pts=[a,b,c];
+  for(let i=0;i<3;i++)this.data.push(...pts[i],...n,...co,...(uvs?uvs[i]:[0,0]),em);
+ }
+ quad(a,b,c,d,col,em=0){this.tri(a,b,c,col,em);this.tri(a,c,d,col,em)}
+ box(p,s,col,r=[0,0,0],em=0){
+  this.push(p,r,s);let q=[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,.5,-.5],[-.5,.5,-.5],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]];
+  for(let f of [[0,3,2,1],[4,5,6,7],[0,4,7,3],[1,2,6,5],[3,7,6,2],[0,1,5,4]])this.quad(...f.map(i=>q[i]),col,em);
+  this.pop();
+ }
+ cyl(p,rt,rb,h,col,n=9,r=[0,0,0],em=0){
+  this.push(p,r);for(let i=0;i<n;i++){let a=i*TAU/n,b=(i+1)*TAU/n;
+   let lo=[Math.cos(a)*rb,-h/2,Math.sin(a)*rb],lo2=[Math.cos(b)*rb,-h/2,Math.sin(b)*rb],hi=[Math.cos(a)*rt,h/2,Math.sin(a)*rt],hi2=[Math.cos(b)*rt,h/2,Math.sin(b)*rt];
+   this.quad(lo,hi,hi2,lo2,col,em);this.tri([0,h/2,0],hi2,hi,rgb(col,1.04),em);this.tri([0,-h/2,0],lo,lo2,rgb(col,.77),em);
+  }this.pop();
+ }
+ sphere(p,s,col,n=10,m=6,r=[0,0,0],em=0){
+  this.push(p,r,s);const pt=(a,b)=>[Math.sin(b)*Math.cos(a),Math.cos(b),Math.sin(b)*Math.sin(a)];
+  for(let j=0;j<m;j++)for(let i=0;i<n;i++){let a=i*TAU/n,b=(i+1)*TAU/n,c=j*Math.PI/m,d=(j+1)*Math.PI/m;this.quad(pt(a,c),pt(b,c),pt(b,d),pt(a,d),col,em)}
+  this.pop();
+ }
+ rod(a,b,r,col,n=6,r2=r,em=0){
+  let delta=V.sub(b,a),len=Math.hypot(...delta),dir=V.norm(delta),u=V.norm(V.cross(Math.abs(dir[1])>.95?[1,0,0]:[0,1,0],dir)),v=V.cross(dir,u);
+  for(let i=0;i<n;i++){let aa=i*TAU/n,bb=(i+1)*TAU/n;let off=(ang,rad)=>V.mul(V.add(V.mul(u,Math.cos(ang)),V.mul(v,Math.sin(ang))),rad);let x=V.add(a,off(aa,r)),y=V.add(a,off(bb,r)),z=V.add(b,off(bb,r2)),w=V.add(b,off(aa,r2));this.quad(x,y,z,w,col,em);this.tri(a,y,x,col,em);this.tri(b,w,z,rgb(col,1.15),em)}
+ }
+ torus(p,R,r,col,n=20,k=7,rot=[0,0,0],sx=1,sz=1){
+  this.push(p,rot,[sx,1,sz]);let f=(a,b)=>[(R+r*Math.cos(b))*Math.cos(a),r*Math.sin(b),(R+r*Math.cos(b))*Math.sin(a)];
+  for(let i=0;i<n;i++)for(let j=0;j<k;j++){let a=i*TAU/n,b=(i+1)*TAU/n,c=j*TAU/k,d=(j+1)*TAU/k;this.quad(f(a,c),f(a,d),f(b,d),f(b,c),col)}this.pop();
+ }
+ ribbon(points,width,col){for(let i=0;i<points.length-1;i++){let a=points[i],b=points[i+1];let v=V.norm(V.cross(V.sub(b,a),[0,1,0]));let d=V.mul(v,width);this.quad(V.sub(a,d),V.add(a,d),V.add(b,d),V.sub(b,d),col)}}
+ build(tex=null,wave=0){return engine.mesh(new Float32Array(this.data),tex,wave)}
+}
+class Engine {
+ constructor(canvas){
+  this.canvas=canvas;let gl=this.gl=canvas.getContext('webgl2',{antialias:true,alpha:false,preserveDrawingBuffer:true,powerPreference:'high-performance'});
+  if(!gl)throw Error('这个浏览器未能启用 WebGL 2。请在浏览器设置中开启硬件加速，或用桌面版 Chrome / Edge 打开。');
+  this.program=this.programFrom(VERT,FRAG);this.depthProg=this.programFrom(DEPTH_VERT,DEPTH_FRAG);this.waterProg=this.programFrom(WATER_VERT,WATER_FRAG);this.pointProg=this.programFrom(POINT_VERT,POINT_FRAG);this.postProg=this.programFrom(POST_VERT,POST_FRAG);
+  this.objects=[];this.time=0;this.wind=1;this.day=0;this.fire=1;this.sunPos=[-10,15,8];this.sunColor=[2.10,.86,.70];this.ambient=[.25,.22,.40];this.exposure=1.05;
+  this.camera={az:.26,el:.89,zoom:1,azTo:.26,elTo:.89,zoomTo:1,target:[0,.5,.6],auto:false};
+  this.makeShadow();this.makeWater();this.makeParticles();
+  this.postVao=gl.createVertexArray();gl.bindVertexArray(this.postVao);
+  let b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);gl.bindVertexArray(null);
+  this.resize();window.addEventListener('resize',()=>this.resize());
+ }
+ programFrom(v,f){let gl=this.gl;const shader=(type,src)=>{let s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));return s};let p=gl.createProgram();gl.attachShader(p,shader(gl.VERTEX_SHADER,v));gl.attachShader(p,shader(gl.FRAGMENT_SHADER,f));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(p));return p}
+ uni(p,name,type,v){let gl=this.gl;let loc=gl.getUniformLocation(p,name);if(loc===null)return;if(type==='mat')gl.uniformMatrix4fv(loc,false,v);else if(type==='3')gl.uniform3fv(loc,v);else if(type==='2')gl.uniform2fv(loc,v);else if(type==='i')gl.uniform1i(loc,v);else gl.uniform1f(loc,v)}
+ mesh(data,texture=null,wave=0){
+  let gl=this.gl,vao=gl.createVertexArray();gl.bindVertexArray(vao);let buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);
+  for(let [i,size,offset] of [[0,3,0],[1,3,3],[2,3,6],[3,2,9],[4,1,11]]){gl.enableVertexAttribArray(i);gl.vertexAttribPointer(i,size,gl.FLOAT,false,48,offset*4)}gl.bindVertexArray(null);
+  let o={vao,buffer,count:data.length/12,matrix:M.id(),texture,wave,visible:true,shadow:true};this.objects.push(o);return o;
+ }
+ texture(canvas){let gl=this.gl,t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,canvas);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.generateMipmap(gl.TEXTURE_2D);return t}
+ makeShadow(){let gl=this.gl;this.shadowSize=2048;this.shadowTex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,this.shadowTex);gl.texImage2D(gl.TEXTURE_2D,0,gl.DEPTH_COMPONENT24,this.shadowSize,this.shadowSize,0,gl.DEPTH_COMPONENT,gl.UNSIGNED_INT,null);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);this.shadowFbo=gl.createFramebuffer();gl.bindFramebuffer(gl.FRAMEBUFFER,this.shadowFbo);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.TEXTURE_2D,this.shadowTex,0);gl.drawBuffers([gl.NONE]);gl.readBuffer(gl.NONE);gl.bindFramebuffer(gl.FRAMEBUFFER,null)}
+ makeWater(){let gl=this.gl;this.waterVao=gl.createVertexArray();gl.bindVertexArray(this.waterVao);let b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-100,0,-100,-100,0,100,100,0,100,-100,0,-100,100,0,100,100,0,-100]),gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);gl.bindVertexArray(null)}
+ makeParticles(){let gl=this.gl;this.particleVao=gl.createVertexArray();gl.bindVertexArray(this.particleVao);this.particleBuffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,this.particleBuffer);for(let [i,n,o] of [[0,3,0],[1,1,3],[2,3,4],[3,1,7],[4,1,8]]){gl.enableVertexAttribArray(i);gl.vertexAttribPointer(i,n,gl.FLOAT,false,36,o*4)}gl.bindVertexArray(null);this.particles=[]}
+ resize(){let gl=this.gl,w=innerWidth,h=innerHeight,dpr=Math.min(Math.max(devicePixelRatio||1,w<700?1:1.35),w<700?1.6:1.8);this.width=Math.round(w*dpr);this.height=Math.round(h*dpr);this.dpr=dpr;this.canvas.width=this.width;this.canvas.height=this.height;
+  if(this.colorTex){gl.deleteTexture(this.colorTex);gl.deleteTexture(this.sceneDepth);gl.deleteFramebuffer(this.fbo)}
+  this.colorTex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,this.colorTex);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA8,this.width,this.height,0,gl.RGBA,gl.UNSIGNED_BYTE,null);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  this.sceneDepth=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,this.sceneDepth);gl.texImage2D(gl.TEXTURE_2D,0,gl.DEPTH_COMPONENT24,this.width,this.height,0,gl.DEPTH_COMPONENT,gl.UNSIGNED_INT,null);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  this.fbo=gl.createFramebuffer();gl.bindFramebuffer(gl.FRAMEBUFFER,this.fbo);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,this.colorTex,0);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.TEXTURE_2D,this.sceneDepth,0);if(gl.checkFramebufferStatus(gl.FRAMEBUFFER)!==gl.FRAMEBUFFER_COMPLETE)throw Error('无法创建渲染缓冲区');gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+ }
+ updateCamera(dt){let c=this.camera;if(c.auto)c.azTo+=dt*.095;let s=1-Math.exp(-dt*8);c.az=mix(c.az,c.azTo,s);c.el=mix(c.el,c.elTo,s);c.zoom=mix(c.zoom,c.zoomTo,s);let dir=[Math.sin(c.az)*Math.cos(c.el),Math.sin(c.el),Math.cos(c.az)*Math.cos(c.el)];this.eye=V.add(c.target,V.mul(dir,34));this.view=M.look(this.eye,c.target);let aspect=this.width/this.height;this.viewH=Math.max(20.0,17.8/aspect)/c.zoom;this.viewW=this.viewH*aspect;this.proj=M.ortho(-this.viewW/2,this.viewW/2,-this.viewH/2,this.viewH/2,.1,85);this.vp=M.mul(this.proj,this.view);this.camRight=[this.view[0],this.view[4],this.view[8]];this.camUp=[this.view[1],this.view[5],this.view[9]];this.camDir=V.mul(dir,-1)}
+ project(p){let q=M.point(this.vp,p);return [(q[0]*.5+.5)*innerWidth,(.5-q[1]*.5)*innerHeight,q[2]]}
+ ray(x,y){let p=V.add(this.eye,V.add(V.mul(this.camRight,(x/innerWidth-.5)*this.viewW),V.mul(this.camUp,(.5-y/innerHeight)*this.viewH)));return {origin:p,dir:this.camDir}}
+ waterPoint(x,y){let r=this.ray(x,y),t=-r.origin[1]/r.dir[1];return V.add(r.origin,V.mul(r.dir,t))}
+ drawMesh(o,p){if(!o.visible)return;let gl=this.gl;this.uni(p,'uModel','mat',o.matrix);this.uni(p,'uWave','f',o.wave);if(p===this.program){this.uni(p,'uTextured','i',o.texture?1:0);if(o.texture){gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,o.texture);this.uni(p,'uTexture','i',1)}}gl.bindVertexArray(o.vao);gl.drawArrays(gl.TRIANGLES,0,o.count)}
+ render(dt){
+  const gl=this.gl;this.updateCamera(dt);this.lightVP=M.mul(M.ortho(-15,15,-15,15,.1,60),M.look(this.sunPos,[0,0,0]));
+  gl.enable(gl.DEPTH_TEST);gl.disable(gl.BLEND);gl.disable(gl.CULL_FACE);gl.depthMask(true);gl.bindFramebuffer(gl.FRAMEBUFFER,this.shadowFbo);gl.viewport(0,0,this.shadowSize,this.shadowSize);gl.clear(gl.DEPTH_BUFFER_BIT);gl.useProgram(this.depthProg);this.uni(this.depthProg,'uLightVP','mat',this.lightVP);this.uni(this.depthProg,'uTime','f',this.time*this.wind);for(let o of this.objects)if(o.shadow)this.drawMesh(o,this.depthProg);
+  gl.bindFramebuffer(gl.FRAMEBUFFER,this.fbo);gl.viewport(0,0,this.width,this.height);gl.clearColor(.04,.2,.24,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  gl.useProgram(this.waterProg);for(let [k,t,v]of [['uVP','mat',this.vp],['uLightVP','mat',this.lightVP],['uTime','f',this.time],['uWind','f',this.wind],['uNight','f',this.day],['uExposure','f',this.exposure]])this.uni(this.waterProg,k,t,v);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,this.shadowTex);this.uni(this.waterProg,'uShadow','i',0);gl.bindVertexArray(this.waterVao);gl.drawArrays(gl.TRIANGLES,0,6);
+  gl.useProgram(this.program);for(let[k,t,v]of [['uVP','mat',this.vp],['uLightVP','mat',this.lightVP],['uTime','f',this.time*this.wind],['uSunDir','3',V.norm(this.sunPos)],['uSunColor','3',this.sunColor],['uAmbient','3',this.ambient],['uFire','f',this.fire],['uNight','f',this.day],['uExposure','f',this.exposure]])this.uni(this.program,k,t,v);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,this.shadowTex);this.uni(this.program,'uShadow','i',0);for(let o of this.objects)this.drawMesh(o,this.program);
+  if(this.particles.length){gl.useProgram(this.pointProg);this.uni(this.pointProg,'uVP','mat',this.vp);this.uni(this.pointProg,'uScale','f',this.height/this.viewH);gl.bindVertexArray(this.particleVao);gl.bindBuffer(gl.ARRAY_BUFFER,this.particleBuffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(this.particles),gl.DYNAMIC_DRAW);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.drawArrays(gl.POINTS,0,this.particles.length/9);gl.depthMask(true);gl.disable(gl.BLEND)}
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.disable(gl.DEPTH_TEST);gl.useProgram(this.postProg);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,this.colorTex);this.uni(this.postProg,'uScene','i',0);gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,this.sceneDepth);this.uni(this.postProg,'uDepth','i',1);this.uni(this.postProg,'uTexel','2',[1/this.width,1/this.height]);this.uni(this.postProg,'uTime','f',this.time);gl.bindVertexArray(this.postVao);gl.drawArrays(gl.TRIANGLES,0,3);
+ }
+}
+const SHADOW_FN=`
+float shadowAt(vec4 sp, float ndl) {
+ vec3 q=sp.xyz/sp.w*.5+.5;
+ if(q.x<0.0||q.x>1.0||q.y<0.0||q.y>1.0||q.z>1.0)return 1.0;
+ float bias=max(.00085,.0018*(1.0-ndl)),s=0.0;
+ for(int x=-1;x<=1;x++)for(int y=-1;y<=1;y++){
+  float d=texture(uShadow,q.xy+vec2(float(x),float(y))*.0010).r;s+=step(q.z-bias,d);
+ }return s/9.0;
+}`;
+const COLOR_FN=`vec3 tonemap(vec3 x){x*=uExposure;return pow(clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.0,1.0),vec3(1.0/2.2));}`;
+const VERT=`#version 300 es
+precision highp float;
+layout(location=0)in vec3 aPosition;layout(location=1)in vec3 aNormal;layout(location=2)in vec3 aColor;layout(location=3)in vec2 aUV;layout(location=4)in float aEmissive;
+uniform mat4 uVP,uModel,uLightVP;uniform float uTime,uWave;
+out vec3 vPos,vNormal,vColor;out vec2 vUV;out float vEmissive;out vec4 vShadow;
+void main(){vec3 p=aPosition;p.z+=sin(p.x*3.0+uTime*1.7)*abs(p.x)*.08*uWave;vec4 w=uModel*vec4(p,1);vPos=w.xyz;vNormal=normalize(mat3(uModel)*aNormal);vColor=aColor;vUV=aUV;vEmissive=aEmissive;vShadow=uLightVP*w;gl_Position=uVP*w;}`;
+const FRAG=`#version 300 es
+precision highp float;
+in vec3 vPos,vNormal,vColor;in vec2 vUV;in float vEmissive;in vec4 vShadow;
+uniform sampler2D uShadow,uTexture;uniform bool uTextured;uniform vec3 uSunDir,uSunColor,uAmbient;uniform float uFire,uNight,uExposure;
+out vec4 outColor;
+${SHADOW_FN}${COLOR_FN}
+void main(){vec3 n=normalize(vNormal);if(!gl_FrontFacing)n=-n;vec3 base=vColor;if(uTextured){vec4 t=texture(uTexture,vUV);if(t.a<.25)discard;base*=pow(t.rgb,vec3(2.2));}
+ float ndl=max(0.0,dot(n,uSunDir)),shadow=shadowAt(vShadow,ndl);
+ vec3 hemi=mix(uAmbient*.48,uAmbient*1.25,n.y*.5+.5);vec3 diffuse=hemi+uSunColor*ndl*(.09+.91*shadow);
+ diffuse+=vec3(.105,.035,.024)*max(0.0,n.x);
+ vec3 f=vec3(0,1.15,.1)-vPos;float d=length(f);diffuse+=vec3(1.9,.46,.06)*uFire/(1.0+d*d*1.8)*(.25+max(0.0,dot(n,normalize(f))))*(.5+uNight*2.0);
+ vec3 color=base*diffuse;color=mix(color,base*max(1.0,vEmissive),min(vEmissive,1.0));
+ float low=clamp((vPos.y+.1)*1.8,0.0,1.0);color*=mix(.77,1.0,low);if(vEmissive>0.0&&vPos.y<.10)color*=mix(1.0,.35,uNight);outColor=vec4(tonemap(color),1.0);}`;
+const DEPTH_VERT=`#version 300 es
+precision highp float;layout(location=0)in vec3 aPosition;uniform mat4 uModel,uLightVP;uniform float uTime,uWave;
+void main(){vec3 p=aPosition;p.z+=sin(p.x*3.0+uTime*1.7)*abs(p.x)*.08*uWave;gl_Position=uLightVP*uModel*vec4(p,1);}`;
+const DEPTH_FRAG=`#version 300 es
+precision highp float;void main(){}`;
+const WATER_VERT=`#version 300 es
+precision highp float;layout(location=0)in vec3 aPosition;uniform mat4 uVP,uLightVP;out vec3 vPos;out vec4 vShadow;
+void main(){vPos=aPosition;vShadow=uLightVP*vec4(aPosition,1);gl_Position=uVP*vec4(aPosition,1);}`;
+const WATER_FRAG=`#version 300 es
+precision highp float;in vec3 vPos;in vec4 vShadow;uniform sampler2D uShadow;uniform float uTime,uWind,uNight,uExposure;out vec4 outColor;
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+${SHADOW_FN}${COLOR_FN}
+void main(){vec2 p=vPos.xz;float r=length(p*vec2(.98,1.02));float a=atan(p.y,p.x);
+ float warp=sin(a*5.0+.8)*.18+sin(a*9.0)*.11;
+ vec3 deep=vec3(.0043,.050,.088),shallow=vec3(.007,.120,.151);
+ float focus=exp(-length(p-vec2(-4.,-2.))* .055);vec3 col=mix(deep,shallow,focus*.77);
+ float reef=1.-smoothstep(5.0,8.0,r+warp);col=mix(col,vec3(.010,.164,.163),reef*.54);
+ vec2 grid=p*.67;vec2 cell=floor(grid);vec2 f=fract(grid);float h=hash(cell+step(1.,f.x+f.y)*.231);col*=.990+h*.020;
+ float bands=sin((r+warp)*5.2+sin(a*7.)*.35)*.5+.5;float band=smoothstep(.84,.96,bands)*(1.-smoothstep(6.,11.,r));col+=vec3(.002,.008,.010)*band;
+ float rip=sin(p.x*1.1+p.y*.62+sin(p.y*.48)+uTime*uWind*.24);col+=vec3(.001,.003,.004)*rip;
+ float s=shadowAt(vShadow,.9);col*=.58+.42*s;
+ col=mix(col,col*vec3(.32,.45,.67),uNight);
+ outColor=vec4(tonemap(col),1.0);}`;
+const POINT_VERT=`#version 300 es
+precision highp float;layout(location=0)in vec3 aPos;layout(location=1)in float aSize;layout(location=2)in vec3 aColor;layout(location=3)in float aAlpha;layout(location=4)in float aShape;uniform mat4 uVP;uniform float uScale;out vec3 vColor;out float vAlpha,vShape;
+void main(){gl_Position=uVP*vec4(aPos,1);gl_PointSize=max(1.,aSize*uScale);vColor=aColor;vAlpha=aAlpha;vShape=aShape;}`;
+const POINT_FRAG=`#version 300 es
+precision highp float;in vec3 vColor;in float vAlpha,vShape;out vec4 outColor;
+void main(){vec2 q=gl_PointCoord*2.-1.;float d=length(q);float alpha;if(vShape<.5)alpha=(1.-smoothstep(.05,1.,d))*vAlpha;else if(vShape<1.5)alpha=(1.-smoothstep(.58,.96,d))*vAlpha;else alpha=(1.-smoothstep(.06,.14,abs(d-.76)))*vAlpha;if(alpha<.005)discard;outColor=vec4(vColor,alpha);}`;
+const POST_VERT=`#version 300 es
+precision highp float;layout(location=0)in vec2 aPos;out vec2 vUV;void main(){vUV=aPos*.5+.5;gl_Position=vec4(aPos,0,1);}`;
+const POST_FRAG=`#version 300 es
+precision highp float;in vec2 vUV;uniform sampler2D uScene,uDepth;uniform vec2 uTexel;uniform float uTime;out vec4 outColor;
+float luma(vec3 c){return dot(c,vec3(.299,.587,.114));}
+void main(){vec3 c=texture(uScene,vUV).rgb;vec3 n=texture(uScene,vUV+vec2(0,uTexel.y)).rgb,s=texture(uScene,vUV-vec2(0,uTexel.y)).rgb,e=texture(uScene,vUV+vec2(uTexel.x,0)).rgb,w=texture(uScene,vUV-vec2(uTexel.x,0)).rgb;
+ float edge=max(max(abs(luma(c)-luma(n)),abs(luma(c)-luma(s))),max(abs(luma(c)-luma(e)),abs(luma(c)-luma(w))));c=mix(c,(n+s+e+w+c*4.)/8.,smoothstep(.08,.3,edge)*.6);
+ float d=texture(uDepth,vUV).r;float ao=0.;for(int i=0;i<8;i++){float a=float(i)*.7854;vec2 offset=vec2(cos(a),sin(a))*uTexel*4.;float od=texture(uDepth,vUV+offset).r;float diff=d-od;ao+=smoothstep(.0003,.002,diff)*(1.-smoothstep(.004,.015,diff));}c*=1.-ao*.015;
+ vec2 p=(vUV-.5)*vec2(.85,1.);float vignette=1.-dot(p,p)*.21;c*=vignette;
+ float grain=fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453);c+=(grain-.5)*.0015;
+ outColor=vec4(c,1);}`;
+
+/* The island is modeled here from simple, low-poly primitives.
+   Everything (including signs, foliage, boats and ocean) is procedural. */
+let engine;
+const sceneState={boats:[],leaves:[],flags:[],flames:[],people:[],lamps:[],ripples:[],bursts:[],hotspots:[],seabirds:[],seaSparkles:[]};
+const palette={wood:'#ad6657',darkWood:'#704447',lightWood:'#ce8865',rail:'#b87555',sand:'#ee9a83',rock:'#9f879a',leaf:'#4e794c',gold:'#e9b952',pink:'#d65683'};
+let S,flamingo,chestLid,fireGlow,angler,fishingLine=null,bobber=null;
+let sceneTime=0;
+function hotspot(type,pos,r,label,object=null){let h={type,pos,r,label,object};sceneState.hotspots.push(h);return h}
+function meshFrom(fn){let b=new Builder();fn(b);return b.build()}
+function texturedQuad(b,x0,y0,x1,y1,z){b.tri([x0,y0,z],[x1,y0,z],[x1,y1,z],'#ffffff',0,[[0,0],[1,0],[1,1]]);b.tri([x0,y0,z],[x1,y1,z],[x0,y1,z],'#ffffff',0,[[0,0],[1,1],[0,1]])}
+function canvasTex(w,h,draw){let c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);return engine.texture(c)}
+function drawFish(ctx,x,y,s,color='#633e51'){
+ ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(-70,0);ctx.bezierCurveTo(-35,-53,22,-39,45,-10);ctx.lineTo(83,-41);ctx.lineTo(69,7);ctx.lineTo(83,42);ctx.lineTo(39,21);ctx.bezierCurveTo(4,52,-45,32,-70,0);ctx.fill();
+ ctx.beginPath();ctx.moveTo(-8,-29);ctx.lineTo(26,-60);ctx.lineTo(26,-22);ctx.fill();ctx.fillStyle='#b18a99';ctx.beginPath();ctx.arc(-34,-5,7,0,TAU);ctx.fill();ctx.strokeStyle='#b18a99';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-16,-15);ctx.quadraticCurveTo(1,3,-16,24);ctx.stroke();ctx.restore();
+}
+function buildIsland(){
+ let n=72,rs=[];for(let i=0;i<n;i++){let a=i/n*TAU;rs.push(4.9+Math.sin(a*5+.5)*.15+Math.sin(a*9)*.095)}
+ let rings=[0,.31,.65,.86,1],ys=[.845,.858,.838,.74,.21];
+ let p=(i,k)=>{let a=(i%n)/n*TAU,r=rs[i%n]*rings[k];return [Math.cos(a)*r,ys[k]+(k>0&&k<4?Math.sin(a*6)*.018:0),Math.sin(a)*r*.92]};
+ for(let k=0;k<4;k++)for(let i=0;i<n;i++){let a=p(i,k),b=p(i+1,k),c=p(i+1,k+1),d=p(i,k+1);let base=rgb('#ff8165',rand(.99,1.01));base[0]*=1.35;let z=(c[2]+d[2])*.5;base=base.map((v,j)=>v*(1-(Math.max(0,z)/5)*[.03,.09,0][j]));S.quad(a,d,c,b,base)}
+ for(let i=0;i<n;i++){let a=i/n*TAU,aa=(i+1)/n*TAU,r=rs[i],rr=rs[(i+1)%n];let p1=[Math.cos(a)*r,.21,Math.sin(a)*r*.92],p2=[Math.cos(aa)*rr,.21,Math.sin(aa)*rr*.92],q1=[p1[0]*1.018,-.22,p1[2]*1.018],q2=[p2[0]*1.018,-.22,p2[2]*1.018];S.quad(p1,q1,q2,p2,choose(['#bd7c88','#b57a87','#cf8790']));
+  if(i%13!==0){let r1=r+.08,r2=rr+.08,w=rand(.028,.095);S.quad([Math.cos(a)*(r1-w),.027,Math.sin(a)*(r1-w)*.92],[Math.cos(a)*(r1+w),.027,Math.sin(a)*(r1+w)*.92],[Math.cos(aa)*(r2+w),.027,Math.sin(aa)*(r2+w)*.92],[Math.cos(aa)*(r2-w),.027,Math.sin(aa)*(r2-w)*.92],'#f1ecc6',1)}
+ }
+ // Broken paving stones around a welcoming, open center.
+ for(let i=0;i<33;i++){let a=i/33*TAU+.03;if(i===7||i===8||i===20||i===29)continue;let r=2.73+rand(-.12,.12);S.box([Math.cos(a)*r,.877,Math.sin(a)*r*.95],[rand(.32,.55),rand(.055,.09),rand(.26,.45)],choose(['#987988','#a28691','#967887','#b1989f']),[0,-a+rand(-.25,.25),rand(-.02,.02)]);}
+ for(let i=0;i<8;i++){let z=2.9+i*.205;S.box([rand(-.23,.23),.82-(i/8)*.17,z],[.38+rand(0,.2),.09,.28],choose(['#ab94a4','#a28691']),[0,rand(-.2,.2),0])}
+ for(let i=0;i<5;i++)S.box([0,.65-i*.10,4.28+i*.22],[1.12,.15,.38],i%2?'#b9a5b1':'#c5a8af');
+ for(let i=0;i<18;i++){let a=rand(0,TAU),r=rand(3.1,4.65);if(Math.sin(a)>.5&&Math.cos(a)>.1)continue;S.sphere([Math.cos(a)*r,.82,Math.sin(a)*r*.89],[rand(.06,.14),.035,rand(.035,.09)],choose(['#f6c5a4','#cf8e86','#eeb598']),6,3,[0,a,0]);}
+}
+function crate(b,x,y,z,sz=.47,rot=0){b.push([x,y,z],[0,rot,0],[sz,sz,sz]);b.box([0,.5,0],[1,.95,1],'#955749');for(let j=0;j<4;j++){b.box([0,.16+j*.23,.513],[.98,.028,.018],'#6d4543');b.box([.51,.16+j*.23,0],[.018,.028,.98],'#6d4543');b.box([-.51,.16+j*.23,0],[.018,.028,.98],'#6d4543')}
+ for(let x of [-.43,.43]){b.box([x,.5,.525],[.105,1,.04],'#c08059');b.box([x,.5,-.525],[.105,1,.04],'#b07054')};b.box([0,.99,0],[1.07,.07,1.05],'#a26450');b.rod([-.43,.05,.55],[.43,.9,.55],.05,'#bd7955',4);b.pop()}
+function barrel(b,x,y,z,s=.34){b.cyl([x,y+s*.72,z],s*.82,s*.85,s*1.45,'#a66b53',10);b.cyl([x,y+s*.4,z],s*.94,s*.92,.075,'#644d4c',10);b.cyl([x,y+s*1.12,z],s*.93,s*.93,.07,'#644d4c',10);b.cyl([x,y+s*1.48,z],s*.83,s*.83,.035,'#c58860',10)}
+function dockSegment(a,b,width=1.4,rails=0){
+ let dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz),yaw=Math.atan2(dx,dz),h=.54;S.push([(a[0]+b[0])/2,0,(a[1]+b[1])/2],[0,yaw,0]);
+ for(let x of [-width*.33,width*.33])S.box([x,h-.18,0],[.15,.20,l+.18],'#6b4545');
+ let count=Math.max(2,Math.round(l/.265));for(let i=0;i<count;i++){let z=-l/2+(i+.5)*l/count,yy=h+rand(-.026,.026),w=width+rand(-.055,.065);S.box([rand(-.025,.025),yy,z],[w,.12,l/count-.025],choose(['#855d4e','#80574b','#7c534a','#936650','#80544f']),[rand(-.015,.015),rand(-.025,.025),rand(-.012,.012)]);
+  for(let x of [-w*.4,w*.4])S.cyl([x,yy+.067,z],.019,.019,.009,'#72504b',5);
+  if(i%2===0){let x=rand(-w*.2,w*.2);S.box([x,yy+.063,z-.045],[rand(.23,.6),.006,.012],'#925849');S.box([x+.1,yy+.063,z+.04],[rand(.16,.45),.006,.009],'#d18a65')}
+ }
+ let posts=Math.ceil(l/1.65);for(let j=0;j<=posts;j++){let z=-l/2+j*l/posts;for(let side of [-1,1]){let x=side*(width/2-.06),ph=1.36;S.cyl([x,.23,z],.102,.13,ph,'#875747',9);S.cyl([x,.92,z],.115,.112,.055,'#ac7958',9);S.cyl([x,.055,z],.125,.13,.10,'#e5e4bc',9);
+   if(j<posts&&((rails===3)||(rails===1&&side===-1)||(rails===2&&side===1))){let zz=z+l/posts;S.rod([x,.99,z],[x,1.00,zz],.047,'#985e49',6);for(let k=0;k<5;k++){let t=k/5,tt=(k+1)/5;S.rod([x,.83-Math.sin(t*Math.PI)*.1,mix(z,zz,t)],[x,.83-Math.sin(tt*Math.PI)*.1,mix(z,zz,tt)],.024,'#a78965',5)}}
+  }}
+ S.pop();
+}
+function dockPath(points,w=1.4,rails=0){for(let i=0;i<points.length-1;i++)dockSegment(points[i],points[i+1],w,Array.isArray(rails)?rails[i%rails.length]:rails)}
+function lantern(x,z,rot=0,h=2.1){
+ S.push([x,0,z],[0,rot,0]);S.cyl([0,h/2,0],.055,.07,h,'#a87950',8);S.box([.16,h-.03,0],[1.04,.09,.09],'#b98154',[0,0,.06]);S.rod([0,h-.5,0],[.48,h,0],.035,'#a87950',5);S.rod([.53,h,0],[.53,h-.5,0],.018,'#65523f');S.cyl([.53,h-.52,0],.13,.09,.065,'#846242',6);S.cyl([.53,h-.71,0],.11,.125,.32,'#f5dc80',5,[0,0,.025],1.6);S.cyl([.53,h-.88,0],.13,.11,.065,'#aa8853',5);S.pop();let p=M.point(M.compose([x,0,z],[0,rot,0]),[.53,h-.7,0]);sceneState.lamps.push(p);
+}
+function flag(x,z,h=2.8,size=1.0,yaw=0){
+ S.rod([x,.0,z],[x-.10,h,z],.029*size,'#9d6e66',7);S.sphere([x-.10,h+.01,z],[.06,.065,.06],'#cdab76',6,4);
+ let tex=canvasTex(512,320,(ctx,w,h)=>{ctx.fillStyle='#bc8d9b';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#e6b0b0';ctx.lineWidth=14;ctx.strokeRect(10,10,w-20,h-20);drawFish(ctx,250,160,2.2)});
+ let b=new Builder();let cols=14,rows=6;for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){let x0=-i/cols*size*1.3,x1=-(i+1)/cols*size*1.3,y0=-j/rows*size*.86,y1=-(j+1)/rows*size*.86;let a=[x0,y0,0],bb=[x1,y0,0],c=[x1,y1,0],d=[x0,y1,0];b.tri(a,bb,c,'#ffffff',0,[[1-i/cols,1-j/rows],[1-(i+1)/cols,1-j/rows],[1-(i+1)/cols,1-(j+1)/rows]]);b.tri(a,c,d,'#ffffff',0,[[1-i/cols,1-j/rows],[1-(i+1)/cols,1-(j+1)/rows],[1-i/cols,1-(j+1)/rows]])}
+ let obj=b.build(tex,1);obj.matrix=M.compose([x-.10,h-.1,z],[0,yaw,0]);sceneState.flags.push(obj);
+}
+function buildDocks(){
+ dockPath([[-4.4,1.4],[-5.15,2.55],[-4.7,4.0],[-3.5,5.15],[-1.8,5.72],[.25,5.72]],1.42,[1,3,2,2,0]);
+ dockPath([[0,4.6],[.1,5.72]],1.30,0);
+ dockPath([[-1.75,5.72],[-1.55,7.35],[-2.38,8.95],[-2.72,10.5]],1.42,[0,0,0]);
+ dockPath([[-4.7,4.0],[-6.6,4.6]],1.32,0);
+ dockPath([[-5.15,2.55],[-6.7,2.4]],1.30,0);
+ dockPath([[4.35,1.1],[5.65,1.6],[6.2,.15],[5.55,-1.3],[4.9,-2.15],[5.55,-3.5],[4.3,-4.45],[3.35,-5.8],[3.65,-8.2]],1.30,[0,2,2,0,1,0,2,0]);
+ dockPath([[1.85,-4.05],[2.0,-5.65],[3.4,-6.4]],1.2,0);
+ lantern(-6.82,2.12,-.3,2.6);lantern(.88,5.83,-.4,2.15);lantern(6.83,.5,2.5,2.35);lantern(3.2,-8.15,-.8,1.8);lantern(-3.9,4.9,-1.2,1.7);
+ flag(-6.5,-2.1,5.7,1.55,-.18);flag(-6.7,2.52,1.9,.53,-.2);flag(5.0,-4.62,3.0,.61,.35);flag(-1.4,7.32,2.0,.55,0);
+ crate(S,-2.7,.62,10.38,.49,.22);crate(S,-2.18,.62,10.05,.45,-.08);crate(S,-2.77,1.11,10.32,.38,-.06);crate(S,3.64,.62,-7.95,.46,.3);crate(S,3.86,.62,-7.5,.32,-.12);barrel(S,-3.74,.6,5.11,.22);
+}
+function leaf(b,origin,ang,len,width,lift,col){
+ b.push(origin,[0,ang,0]);let ts=[0,.2,.43,.64,.84,1],ws=[0,.8,1,.74,.41,0];
+ for(let i=0;i<ts.length-1;i++){let t=ts[i],tt=ts[i+1];let center=u=>[0,Math.sin(u*Math.PI)*lift-u*u*len*.33,u*len];let a=center(t),d=center(tt),w=ws[i]*width,ww=ws[i+1]*width;let l=[-w,a[1]-.04,a[2]],r=[w,a[1]-.04,a[2]],ll=[-ww,d[1]-.045,d[2]],rr=[ww,d[1]-.045,d[2]];b.quad(a,l,ll,d,rgb(col,.8));b.quad(a,d,rr,r,col);}
+ b.rod([0,0,0],[0,-len*.15,len*.83],.016,'#688347',5,.007);b.pop();
+}
+function palm(x,z,h=1.1,scale=1,angle=0){
+ let y=.78,top=[x+.16*scale,y+h,z-.04];S.rod([x,y,z],[x+.08,y+h*.45,z],.10*scale,'#a9845a',7,.079*scale);S.rod([x+.08,y+h*.45,z],top,.079*scale,'#b39764',7,.057*scale);
+ for(let j=0;j<6;j++)S.cyl([x+.16*j/6*scale,y+h*j/6,z],.103*scale*(1-j/12),.10*scale*(1-j/12),.035,'#98784d',7);
+ let b=new Builder();for(let j=0;j<9;j++)leaf(b,[0,0,0],j*TAU/9+angle,rand(1.0,1.65)*scale,rand(.19,.29)*scale,rand(.19,.42)*scale,choose(['#527b48','#678346','#47754b','#6a8547']));
+ for(let j=0;j<3;j++)b.sphere([rand(-.10,.1),-.02,rand(-.10,.1)],[.12,.15,.12],'#897548',7,4);
+ let o=b.build();sceneState.leaves.push({o,top,phase:rand(0,TAU)});o.matrix=M.tr(...top);
+ for(let i=0;i<3;i++)S.sphere([x+rand(-.25,.25),.8,z+rand(-.2,.2)],[.25,.15,.2],choose(['#8b8d69','#9a956e']),7,4);
+}
+function bush(x,z,s=.8){S.push([x,.81,z],[0,rand(0,TAU),0]);for(let i=0;i<7;i++)leaf(S,[0,rand(0,.13),0],i*TAU/7,rand(.55,1.0)*s,rand(.13,.24)*s,.35*s,choose(['#56834c','#708b4e','#3e7754']));S.pop()}
+function buildFoliage(){
+ palm(-3.84,-1.1,.76,.76,.6);palm(-1.05,-3.45,1.15,.85,.5);palm(.12,-3.78,1.48,.82,.9);palm(2.18,-3.12,.64,.73,1);palm(4.0,1.88,.72,.8,.2);palm(3.85,2.74,.68,.72,.4);
+ for(let [x,z,s] of [[-4,-2.2,.9],[-3.9,-.4,.8],[-3.6,-2.75,.65],[-1.42,-3.4,.9],[.4,-3.6,.6],[2.2,-3.9,.85],[3.6,-1.85,.58],[3.0,3.1,.55],[4.35,2.45,.5]])bush(x,z,s);
+}
+function buildBillboard(){
+ let x=.55,z=-3.50;S.push([x,0,z],[0,-.04,0]);for(let xx of [-2.00,2.00]){S.cyl([xx,2.49,0],.135,.165,4.98,'#a77351',10);S.cyl([xx,4.99,0],.142,.145,.035,'#e6aa68',10);S.cyl([xx,.07,0],.17,.17,.11,'#ede2bf',10)}
+ S.box([0,3.27,0],[3.93,1.9,.14],'#876458');for(let y of [2.26,4.25])S.box([0,y,.13],[4.10,.11,.16],'#b57e5d');for(let xx of [-1.94,1.94])S.box([xx,3.25,.13],[.1,2.02,.17],'#b37d5b');S.rod([-1.76,2.33,-.11],[1.76,4.12,-.11],.07,'#9c7559',4);S.pop();
+ let tex=canvasTex(1200,570,(c,w,h)=>{c.fillStyle='#ba919e';c.fillRect(0,0,w,h);c.strokeStyle='#82636f';c.lineWidth=5;c.strokeRect(12,12,w-24,h-24);c.beginPath();c.moveTo(320,8);c.lineTo(320,h-8);c.moveTo(321,198);c.lineTo(w,198);c.stroke();drawFish(c,146,112,1.55);c.fillStyle='#6b465b';c.font='bold 132px Georgia, serif';c.fillText('98329824',358,154);
+ c.strokeStyle='#775565';c.lineWidth=8;for(let i=0;i<9;i++){c.beginPath();c.moveTo(50+i*25,264);c.lineTo(60+i*25,405);c.stroke()}c.beginPath();c.moveTo(30,365);c.lineTo(276,289);c.stroke();
+ c.lineWidth=10;c.beginPath();c.moveTo(385,246);c.lineTo(610,246);c.lineTo(500,378);c.closePath();c.stroke();c.beginPath();c.moveTo(500,378);c.lineTo(500,485);c.moveTo(443,487);c.lineTo(557,487);c.stroke();c.fillStyle='#90697d';c.beginPath();c.moveTo(410,271);c.lineTo(585,271);c.lineTo(500,365);c.fill();
+ for(let i=0;i<5;i++)drawFish(c,686+i%3*115,277+Math.floor(i/3)*85,.29,'#8d6e7b');c.lineWidth=6;c.beginPath();c.arc(811,435,49,0,Math.PI);c.stroke();c.beginPath();c.arc(1054,429,70,.7,5.8);c.arc(1054,429,49,.7,5.8);c.stroke();c.font='italic 25px Georgia';c.fillText('a little lost. a little found.',640,538);});
+ let b=new Builder();texturedQuad(b,-1.89,2.34,1.89,4.16,.091);let obj=b.build(tex);obj.matrix=M.compose([x,0,z],[0,-.04,0]);hotspot('sign',[x,3.2,z],1.65,'海岛留言板');
+}
+function buildHut(){
+ let x=-2.75,z=-1.96;S.push([x,.81,z],[0,-.08,0]);
+ S.box([0,.12,0],[2.25,.23,1.38],'#78504d');for(let i=0;i<10;i++)S.box([-.99+i*.22,.25,0],[.208,.10,1.43],choose(['#a66a54','#b57658','#9e634f']));
+ for(let xx of [-1.08,1.08])for(let zz of [-.63,.63])S.box([xx,1.3,zz],[.085,2.38,.085],'#b78357');
+ for(let j=0;j<7;j++)S.box([0,.42+j*.12,-.60],[2.16,.11,.09],choose(['#8c594f','#98614e','#a16b52']));
+ S.box([0,1.07,.50],[2.22,.13,.53],'#d29464');S.box([0,.72,.52],[2.15,.66,.07],'#995a4d');for(let xx of [-.77,-.38,0,.38,.77])S.box([xx,.72,.56],[.028,.66,.025],'#b27757');
+ S.box([0,1.22,-.61],[2.17,.09,.27],'#b27c56');for(let i=0;i<7;i++){let xx=-.81+i*.26,col=choose(['#6f7851','#cf8c76','#758a78']);S.cyl([xx,1.39,-.60],.065,.067,.27,col,7);S.cyl([xx,1.56,-.60],.026,.032,.10,col,7)}
+ // Individually modeled canvas stripes; no flat roof shortcut.
+ for(let i=0;i<11;i++){let xa=-1.20+i*2.40/11,xb=xa+2.40/11;let col=i%2?'#aa5f62':'#cfb9c0';S.quad([xa,2.47,-.7],[xa,2.03,.83],[xb,2.03,.83],[xb,2.47,-.7],col);S.quad([xa,2.03,.83],[xa,1.84,.83],[xb,1.84,.83],[xb,2.03,.83],col)}
+ S.rod([-1.22,2.49,-.71],[1.22,2.49,-.71],.065,'#bd8258',6);S.rod([-1.22,2.02,.83],[1.22,2.02,.83],.035,'#d5a571',6);
+ S.box([0,2.81,-.6],[2.29,1.02,.12],'#9f6e54');S.box([0,2.81,-.522],[2.15,.87,.025],'#deb0b0');for(let xx of [-1.11,1.11])S.box([xx,2.83,-.57],[.064,1.16,.14],'#c58e61');
+ // A glass, citrus wedge and tiny drinks menu on the counter.
+ S.cyl([.57,1.24,.55],.07,.043,.20,'#eadcbf',8);S.cyl([.57,1.34,.55],.063,.063,.02,'#dca25f',8);S.rod([.60,1.3,.56],[.64,1.53,.56],.008,'#af595e',5);S.sphere([.50,1.34,.55],[.044,.052,.015],'#e4b963',7,4);
+ S.box([-.68,1.27,.54],[.30,.27,.035],'#533f47',[.12,0,0]);S.pop();
+ let tex=canvasTex(700,280,(c,w,h)=>{c.fillStyle='#d9aeb1';c.fillRect(0,0,w,h);c.fillStyle='#684557';c.textAlign='center';c.font='bold 80px Georgia, serif';c.fillText('FISH &',w/2,112);c.fillText('COCKTAILS',w/2,211);c.strokeStyle='#99717e';c.lineWidth=4;c.strokeRect(10,10,w-20,h-20)});let b=new Builder();texturedQuad(b,-1.02,2.42,1.02,3.20,-.505);let o=b.build(tex);o.matrix=M.compose([x,.81,z],[0,-.08,0]);hotspot('bar',[x,1.9,z+.4],1.2,'来杯日落苏打');crate(S,-3.38,.79,1.52,.43,-.2);crate(S,-3.72,.79,1.26,.36,.15);
+}
+function umbrella(){
+ let x=3.45,z=-.92;S.cyl([x,1.7,z],.034,.045,1.82,'#d1a074',7);S.cyl([x,.91,z],.22,.28,.07,'#b88776',9);
+ let peak=[x,3.0,z];let colors=['#e58f62','#ce805f','#f5ab79','#b77167'];for(let i=0;i<8;i++){let a=i*TAU/8,b=(i+1)*TAU/8;let p=[x+Math.cos(a)*1.1,2.53,z+Math.sin(a)*1.1],q=[x+Math.cos(b)*1.1,2.53,z+Math.sin(b)*1.1];S.tri(peak,q,p,colors[i%4]);S.tri(p,q,[mix(p[0],q[0],.5),2.42,mix(p[2],q[2],.5)],colors[i%4]);S.rod(peak,p,.017,'#dca274',5)}S.sphere([x,3.035,z],[.07,.09,.07],'#f2bd81',7,4);
+ // Deck chair and side table.
+ S.push([3.14,.84,.08],[0,-.35,0]);for(let xx of [-.34,.34]){S.rod([xx,0,.52],[xx,.72,-.5],.035,'#ba805d');S.rod([xx,0,-.42],[xx,.45,.47],.035,'#ba805d');S.rod([xx,.42,.3],[xx,1.06,-.55],.035,'#c78e66')}
+ for(let j=0;j<5;j++){let x=-.30+j*.12;S.quad([x,.44,.3],[x+.12,.44,.3],[x+.12,1.03,-.54],[x,1.03,-.54],j%2?'#d08482':'#efd1aa')};S.pop();
+ S.cyl([4.05,1.17,.04],.032,.04,.61,'#986d55',7);S.cyl([4.05,1.48,.04],.36,.36,.065,'#bf8e64',10);S.cyl([4.05,1.60,.04],.057,.04,.16,'#f0c59c',7);S.rod([4.05,1.67,.04],[4.09,1.8,.04],.008,'#a05863',5);
+}
+function buildCampfire(){
+ for(let i=0;i<10;i++){let a=i*TAU/10;S.sphere([Math.cos(a)*.45,.9,Math.sin(a)*.4],[.18,.10,.13],choose(['#ae9c9a','#b6a18b','#9c9099']),7,4,[0,a,0])}
+ for(let a of [0,1.05,2.1]){let x=Math.cos(a)*.4,z=Math.sin(a)*.4;S.rod([-x,.94,-z],[x,.99,z],.09,'#6f5045',7);S.rod([-x*.98,.94,-z*.98],[-x*1.03,.94,-z*1.03],.071,'#cd9963',8)}
+ for(let i=0;i<7;i++){let x=rand(-.18,.18),z=rand(-.16,.16);let o=meshFrom(b=>{b.sphere([0,.18,0],[.11,.28,.11],i%2?'#ffa12c':'#ffdb50',6,4,[0,rand(0,TAU),0],1.9);b.cyl([.015,.42,0],0,.082,.31,'#ffe576',5,[0,0,-.09],1.8)});sceneState.flames.push({o,x,z,phase:rand(0,TAU)})}
+ let logs=[[-.10,1.35,1.45,0],[-1.37,.9,.0,1.0],[.78,.75,-1.15,-.8]];
+ for(let [x,unused,z,r]of logs){let len=1.35;S.push([x,.90,z],[0,r,0]);S.rod([-len/2,.03,0],[len/2,.03,0],.098,'#bd8659',8);for(let xx of [-len/2,len/2])S.cyl([xx,.032,0],.081,.081,.018,'#ddb67b',8,[0,0,Math.PI/2]);S.pop()}
+ hotspot('fire',[0,1.23,0],.70,'篝火 · 点击熄灭');
+}
+function makePerson(x,z,rotation=0,mode='visitor',scale=1){
+ let b=new Builder();let ground=z>4.5?.62:.87;b.push([0,0,0],[0,0,0],[scale,scale,scale]);
+ let shirt=choose(['#aa8863','#b98b60','#9d7760','#ba7857']);b.cyl([0,.28,0],.082,.11,.21,shirt,7);b.sphere([0,.49,0],[.09,.105,.087],'#d5aa78',8,5);b.cyl([0,.55,0],.14,.15,.04,'#c49b65',10,[0,0,-.1]);b.cyl([0,.60,0],.081,.091,.083,'#bd945f',8,[0,0,-.1]);b.box([0,.555,.008],[.182,.024,.182],'#8c755a',[0,0,-.1]);
+ for(let side of [-1,1]){b.rod([side*.045,.18,0],[side*.055,.045,.016],.033,'#79675a',6);b.sphere([side*.055,.03,.04],[.045,.03,.073],'#6c5650',7,4)}
+ if(mode==='fisher'){b.rod([-.08,.35,0],[-.10,.28,.16],.035,'#d0a073',6);b.rod([.08,.35,0],[.12,.31,.20],.035,'#d0a073',6);b.rod([.10,.28,.17],[.24,.96,.92],.012,'#735c4c',5,.005);b.rod([.24,.96,.92],[.23,.05,1.12],.0025,'#dccfb0',4)}
+ else{b.rod([-.08,.35,0],[-.12,.20,.04],.031,'#cba070',6);b.rod([.08,.35,0],[.11,.22,-.03],.031,'#cba070',6)}b.pop();let o=b.build();o.matrix=M.compose([x,ground,z],[0,rotation,0]);sceneState.people.push({o,x,z,rotation,ground,phase:rand(0,TAU),mode});return o;
+}
+function buildPeople(){
+ for(let [x,z,r]of [[-1.7,.2,-1.2],[.8,-.8,1.5],[-1.8,1.5,-.4],[-1.4,1.8,.5],[2.1,3.1,2.5],[2.55,2.86,2.1]])makePerson(x,z,r,'visitor',.94);
+ angler=makePerson(-1.70,8.02,.35,'fisher',1.0);makePerson(5.82,.39,-1.7,'fisher',.9);
+}
+function buildChest(){
+ let x=2.6,z=2.0,r=-.32;S.push([x,.86,z],[0,r,0]);S.box([0,.22,0],[.91,.44,.66],'#95536a');S.box([0,.46,0],[.87,.045,.62],'#5c445e');for(let xx of [-.39,.39]){S.box([xx,.26,.35],[.075,.45,.047],'#d8ab52');S.box([xx,.26,-.35],[.075,.45,.047],'#d8ab52');S.box([xx,.025,0],[.08,.075,.72],'#d8ab52')}
+ for(let zz of [-.32,.32])S.box([0,.47,zz],[.95,.06,.06],'#e1b558');S.box([0,.29,.362],[.15,.18,.038],'#e2b451');S.box([0,.3,.386],[.034,.06,.024],'#66514d');
+ for(let i=0;i<6;i++)S.sphere([rand(-.28,.28),.45+rand(0,.13),rand(-.2,.2)],[.13,.09,.10],choose(['#e4ac3f','#f2cc55','#d56f93','#dc9c55']),5,3);S.pop();
+ let b=new Builder();for(let i=0;i<10;i++){let a=i*Math.PI/10,aa=(i+1)*Math.PI/10;let p=[-.46,Math.sin(a)*.33,Math.cos(a)*.33+.33],q=[.46,Math.sin(a)*.33,Math.cos(a)*.33+.33],pp=[-.46,Math.sin(aa)*.33,Math.cos(aa)*.33+.33],qq=[.46,Math.sin(aa)*.33,Math.cos(aa)*.33+.33];b.quad(p,q,qq,pp,'#965c74');for(let xx of [-.4,.4]){b.quad([xx-.036,p[1]+.013,p[2]],[xx+.036,p[1]+.013,p[2]],[xx+.036,pp[1]+.013,pp[2]],[xx-.036,pp[1]+.013,pp[2]],'#e0b556')};b.tri([-.46,0,.33],pp,p,'#bd8a65');b.tri([.46,0,.33],q,qq,'#bd8a65')};b.box([0,-.013,.33],[.93,.05,.68],'#d3a756');chestLid={o:b.build(),x,z,r,angle:-1.15,to:-1.15};hotspot('chest',[x,1.35,z],.65,'一只搁浅的宝箱');
+}
+function boatHull(b,scale=1,tug=false){
+ const outline=[[-.32,-.75],[-.48,-.4],[-.51,.14],[-.39,.58],[0,.91],[.39,.58],[.51,.14],[.48,-.4],[.32,-.75]];
+ b.push([0,0,0],[0,0,0],[scale,scale,scale]);let n=outline.length;
+ for(let i=0;i<n;i++){let [x,z]=outline[i],[xx,zz]=outline[(i+1)%n];let out=[x,.40,z],out2=[xx,.40,zz],low=[x*.67,.04,z*.75],low2=[xx*.67,.04,zz*.75],inn=[x*.8,.39,z*.85],inn2=[xx*.8,.39,zz*.85];b.quad(low,out,out2,low2,tug?'#694866':choose(['#b87174','#ad6973','#b5757b']));b.quad(out,inn,inn2,out2,'#d9a086');b.quad(inn,[x*.62,.17,z*.72],[xx*.62,.17,zz*.72],inn2,'#bc816c');b.tri([0,.165,0],[xx*.67,.165,zz*.73],[x*.67,.165,z*.73],'#b77c64');
+  if(tug)b.quad([x*.91,.28,z*.92],[x*.96,.34,z*.96],[xx*.96,.34,zz*.96],[xx*.91,.28,zz*.92],'#e6bc91');}
+ for(let z of [-.32,.23])b.box([0,.35,z],[.73,.07,.115],'#d09872');for(let i=0;i<5;i++)b.box([-.24+i*.12,.17,-.1],[.009,.008,.9],'#966354');b.pop();
+}
+function makeBoat(x,z,rot,scale=.73,index=0,tug=false){
+ let b=new Builder();boatHull(b,tug?1.2:1,tug);
+ if(tug){b.box([0,.59,-.05],[.72,.4,1.12],'#78445d');b.box([0,1.03,-.26],[.65,.63,.67],'#b68b45');for(let xx of [-.336,.336])b.box([xx,1.13,-.24],[.026,.36,.44],'#496c6a');b.box([0,1.13,.088],[.45,.35,.024],'#638782');b.box([0,1.39,-.26],[.83,.105,.88],'#d35d5a',[0,0,.025]);b.cyl([.22,1.64,-.54],.075,.08,.49,'#71575b',7);b.cyl([.22,1.9,-.54],.095,.095,.045,'#cd9363',7);
+  for(let xx of [-.51,.51]){b.torus([xx,.41,.05],.14,.045,'#51475b',12,6,[0,0,Math.PI/2]);b.rod([xx,.58,.32],[xx,.94,.32],.028,'#bb8c6e');b.rod([xx,.94,.32],[xx,.94,.81],.027,'#bb8c6e');b.rod([xx,.58,.81],[xx,.94,.81],.028,'#bb8c6e')}
+ }else{
+  b.rod([-.40,.41,-.22],[.71,.43,.38],.025,'#bc9874',6);b.box([.78,.43,.42],[.24,.05,.095],'#c5a07c',[0,-.5,0]);
+  if(index%3===0){b.cyl([0,.51,-.30],.075,.085,.22,'#d3a77f',7);b.sphere([0,.69,-.29],[.085,.10,.083],'#ddb58a',7,4);b.cyl([0,.75,-.29],.135,.14,.035,'#bd976e',8);b.rod([.12,.55,-.23],[.2,1.22,.85],.010,'#66596a',5,.004)}
+  if(index%5===1)crate(b,0,.2,-.18,.28,.2);
+ }
+ let o=b.build();let boat={o,x,z,rot,scale,phase:rand(0,TAU),cruise:0,progress:0,tug,index};sceneState.boats.push(boat);o.matrix=M.compose([x,.03,z],[0,rot,0],[scale,scale,scale]);hotspot('boat',[x,.45,z],(tug?1.2:.70)*scale,tug?'小拖船 · 出海兜风':'小木船 · 轻轻推一下',boat);return boat;
+}
+function buildBoats(){
+ for(let [i,p]of [[-7.5,-5.5,.6,.64],[-8.8,-1.1,.2,.64],[-6.28,3.41,1.3,.65],[-3.4,6.4,-.4,.75],[.11,7.32,-.2,.73],[4.48,6.5,.8,.75],[8.21,3.8,.6,.80],[8.45,-1.55,1.0,.62],[7.0,-6.83,.5,.7],[3.1,-8.55,2.4,.54],[-2.4,-8.8,1.3,.53],[-4.3,-7.1,.7,.54],[-7.7,9.6,1.8,.82],[3.8,10.15,1.2,.79],[9.7,7.98,.8,.73],[7.6,-9.8,1.2,.56],[-10.5,4.8,-.1,.7]].entries())makeBoat(p[0],p[1],p[2],p[3],i);
+ makeBoat(6.62,-3.68,.1,1.13,100,true);
+}
+function buildFlamingo(){
+ let b=new Builder();b.torus([0,.47,0],.59,.19,'#cd5383',20,7,[0,0,0],1.0,1.15);b.torus([0,.41,0],.6,.13,'#b64d79',20,6,[0,0,0],1,1.15);
+ // A curved, faceted neck and beak, rather than a generic pink cylinder.
+ let pts=[[-.52,.48,.19],[-.69,.75,.20],[-.72,1.0,.19],[-.72,1.29,.15],[-.81,1.50,.10],[-1.02,1.58,.08],[-1.17,1.47,.08]];for(let i=0;i<pts.length-1;i++)b.rod(pts[i],pts[i+1],i>3?.13:.12,'#d56489',9,i>3?.135:.12);
+ b.sphere([-1.07,1.56,.085],[.19,.16,.15],'#df758f',10,6);b.sphere([-1.23,1.42,.08],[.12,.17,.095],'#dca27f',8,5,[0,0,-.3]);b.sphere([-1.26,1.30,.082],[.077,.12,.068],'#725559',7,5,[0,0,-.14]);b.sphere([-1.05,1.61,.226],[.051,.057,.024],'#f9d4bf',8,5);b.sphere([-1.055,1.61,.248],[.026,.032,.017],'#403d54',7,4);
+ for(let side of [-1,1]){b.sphere([side*.55,.64,.1],[.17,.27,.43],side<0?'#d95685':'#c64b7e',9,5,[0,0,side*-.28]);for(let i=0;i<3;i++)b.sphere([side*.54,.78+i*.03,-.2+i*.16],[.12,.08,.18],'#e07795',7,4,[0,0,.2]);}
+ b.cyl([.05,.78,-.64],0,.20,.50,'#d66088',7,[.85,0,0]);let o=b.build();flamingo={o,spin:0,to:0};o.matrix=M.compose([-5.58,.03,-1.35],[0,.02,0]);hotspot('flamingo',[-5.95,1.1,-1.3],1.0,'火烈鸟 · 打个招呼');
+}
+function underwater(){
+ // Low-contrast silhouettes are deliberately below the visual surface language.
+ const colors=['#155765','#165b69','#1b6370'];
+ for(let i=0;i<17;i++){let a=rand(0,TAU),r=rand(6,15),x=Math.cos(a)*r,z=Math.sin(a)*r;if(i<5){x-=3}
+  let col=choose(colors);for(let j=0;j<7;j++){let aa=j*TAU/7+rand(-.4,.4),len=rand(.32,.9);let p=[x,.014,z],l=[x+Math.cos(aa-.18)*len*.4,.014,z+Math.sin(aa-.18)*len*.4],tip=[x+Math.cos(aa)*len,.014,z+Math.sin(aa)*len],rr=[x+Math.cos(aa+.18)*len*.4,.014,z+Math.sin(aa+.18)*len*.4];S.quad(p,rr,tip,l,col,1)}
+ }
+ for(let i=0;i<14;i++){let a=rand(0,TAU),r=rand(5.6,12.9),x=Math.cos(a)*r,z=Math.sin(a)*r;S.push([x,.015,z],[0,rand(0,TAU),0]);let col='#165b68';S.sphere([0,.01,0],[.13,.012,.37],col,8,3,[0,0,0],1);S.tri([0,.02,-.30],[-.13,.02,-.49],[.13,.02,-.49],col,1);S.pop()}
+}
+function seabirds(){for(let i=0;i<4;i++){let b=new Builder();b.rod([0,0,0],[.16,.05,0],.035,'#e8d4b3',5,.009);b.tri([0,0,0],[-.18,.03,-.08],[-.33,.05,.03],'#e8d4b3');b.tri([0,0,0],[.02,.03,.21],[-.13,.07,.38],'#e8d4b3');let o=b.build();o.shadow=false;sceneState.seabirds.push({o,phase:i*1.8,r:8+i*.55})}}
+function makeSeaSparkles(){for(let i=0;i<300;i++){let x=i<210?rand(-17,17):rand(-12,-4.5),z=i<210?rand(-17,17):rand(-8,3.0);if(Math.hypot(x,z)<5.1)continue;sceneState.seaSparkles.push({x,z,size:rand(.030,.085),phase:rand(0,TAU),speed:rand(.4,1.4)})}}
+function initScene(){
+ engine=new Engine(document.querySelector('#world'));S=new Builder();buildIsland();underwater();buildDocks();buildBillboard();buildHut();buildFoliage();umbrella();buildCampfire();buildChest();buildPeople();buildBoats();buildFlamingo();seabirds();makeSeaSparkles();S.build();
+ // Keep dynamic sparks and wakes outside the static geometry batch.
+ window.__island={engine,sceneState,getState:()=>({...appState,fish:appState.fish.slice()}),project:p=>engine.project(p)};
+}
+function particle(p,size,c,alpha=1,shape=0){engine.particles.push(...p,size,...c,alpha,shape)}
+function addRipple(x,z,size=1){sceneState.ripples.push({x,z,t:0,size})}
+function burstAt(pos,color=[1,.80,.35],n=20){for(let i=0;i<n;i++)sceneState.bursts.push({pos:pos.slice(),v:[rand(-.9,.9),rand(.5,2),rand(-.9,.9)],life:rand(.5,1.4),t:0,color})}
+function animateScene(dt,t){
+ engine.particles.length=0;
+ for(let l of sceneState.leaves){let a=Math.sin(t*.8+l.phase)*.025*engine.wind;l.o.matrix=M.compose(l.top,[a,Math.sin(t*.5+l.phase)*.015*engine.wind,a*.5])}
+ for(let boat of sceneState.boats){let {x,z,rot,scale,phase}=boat;if(boat.cruise>0){boat.progress+=dt*.28;let p=clamp(boat.progress,0,1),s=Math.sin(p*Math.PI),a=p*TAU;let direction=V.norm([x,0,z]);x+=direction[0]*s*2.6+Math.sin(a)*s;z+=direction[2]*s*2.6+Math.cos(a)*s;rot+=Math.sin(p*Math.PI)*1.8;if(p>=1){boat.cruise=0;boat.progress=0;toast('小船兜了一圈，又回到岸边。')}}
+  boat.o.matrix=M.compose([x,.025+Math.sin(t*.9+phase)*.055*engine.wind,z],[Math.sin(t*.85+phase)*.025*engine.wind,rot,Math.cos(t*.75+phase)*.035*engine.wind],[scale,scale,scale]);boat.current=[x,.45,z];
+  if(boat.cruise>0&&Math.random()<dt*7)addRipple(x,z,.44);}
+ for(let f of sceneState.flames){let s=.8+Math.sin(t*7+f.phase)*.14+Math.sin(t*11+f.phase)*.08;f.o.visible=!!appState.fire;f.o.matrix=M.compose([f.x,.94,f.z],[0,t*.7+f.phase,Math.sin(t*5+f.phase)*.08],[s,s*1.1,s])}
+ if(appState.fire){particle([0,1.22,.02],1.5,[1,.59,.10],.095);particle([0,1.26,.04],.82,[1,.76,.2],.16);
+  for(let i=0;i<19;i++){let p=(t*.22+i/19)%1;particle([Math.sin(i*8+p*5)*.05+p*.34,1.5+p*2.7,Math.cos(i*3)*.08],.12+p*.15,[.92,.86,.73],Math.sin(p*Math.PI)*.25)}
+  for(let i=0;i<16;i++){let p=(t*.45+i*.069)%1;particle([Math.sin(i*12+p*7)*p*.28,.98+p*1.3,Math.cos(i*9+p*4)*p*.20],.028,[1,.81,.25],(1-p)*.8,1)}}
+ for(let l of sceneState.lamps){particle(l,.43+engine.day*.26,[1,.83,.35],.11+engine.day*.18);particle(l,.19,[1,.91,.53],.25)}
+ for(let p of sceneState.seaSparkles){let k=Math.pow(Math.max(0,Math.sin(t*.42*p.speed+p.phase)),12);if(k>.05)particle([p.x+Math.sin(t*.15+p.phase)*.12,.045,p.z],p.size*(.7+k),[.78,.94,.83],k*.78*(1-engine.day*.72),1)}
+ sceneState.ripples=sceneState.ripples.filter(r=>{r.t+=dt;let s=r.t*1.6*r.size;particle([r.x,.045,r.z],.05+s,[.77,.94,.82],(1-r.t/1.6)*.32,2);return r.t<1.6});
+ sceneState.bursts=sceneState.bursts.filter(p=>{p.t+=dt;let a=p.t;p.pos=V.add(p.pos,V.mul(p.v,dt));p.v[1]-=dt*1.2;particle(p.pos,.055,p.color,(1-a/p.life)*.9,1);return a<p.life});
+ for(let bird of sceneState.seabirds){let a=t*.037+bird.phase;let x=Math.cos(a)*bird.r,z=Math.sin(a)*bird.r;bird.o.matrix=M.compose([x,5.2+Math.sin(a*3)*.25,z],[Math.sin(t*2+bird.phase)*.06,-a,Math.sin(t*3+bird.phase)*.11])}
+ flamingo.spin=mix(flamingo.spin,flamingo.to,1-Math.exp(-dt*1.7));flamingo.o.matrix=M.compose([-5.65,.03+Math.sin(t*.9)*.06,-1.35],[Math.sin(t*.72)*.022,flamingo.spin,Math.cos(t*.8)*.028]);
+ chestLid.angle=mix(chestLid.angle,chestLid.to,1-Math.exp(-dt*4));chestLid.o.matrix=M.mul(M.compose([chestLid.x,1.33,chestLid.z],[0,chestLid.r,0]),M.mul(M.tr(0,0,-.33),M.rx(chestLid.angle)));
+ for(let p of sceneState.people){p.o.matrix=M.compose([p.x,p.ground+Math.sin(t*1.3+p.phase)*.008,p.z],[0,p.rotation+Math.sin(t*.55+p.phase)*.035,Math.sin(t*.8+p.phase)*.018])}
+}
+
+/* UI, pointer controls, fishing, audio and persistence. No external requests. */
+const $=s=>document.querySelector(s),$$=s=>Array.from(document.querySelectorAll(s));
+const fishSpecies=[
+ {name:'薄荷小鱼',en:'MINT MINNOW',kind:'海湾常客',color:'#91c4ae',size:[7,15]},
+ {name:'落日小鲷',en:'SUNSET SNAPPER',kind:'珊瑚旅人',color:'#e69a7a',size:[13,24]},
+ {name:'蓝鳍来信',en:'BLUEFIN LETTER',kind:'深蓝来信',color:'#85aebb',size:[18,31]},
+ {name:'星斑河豚',en:'STARRY PUFFER',kind:'慢游居民',color:'#cfb97e',size:[9,19]},
+ {name:'月光海马',en:'MOONLIT SEAHORSE',kind:'夜色访客',color:'#b3a4c4',size:[8,16]},
+ {name:'金色传说',en:'GOLDEN WANDERER',kind:'珍稀邂逅',color:'#e5bc64',size:[21,39]},
+];
+const appState={fire:true,time:'sunset',sound:false,motion:true,fish:[],catches:0,fishing:'idle',biteAt:0,fishTimer:0,immersive:false};
+try{let s=JSON.parse(localStorage.getItem('drift-island-v1')||'{}');appState.fish=Array.isArray(s.fish)?s.fish.filter(i=>Number.isInteger(i)&&i>=0&&i<6):[];appState.catches=Number.isFinite(s.catches)?s.catches:0}catch{}
+function save(){try{localStorage.setItem('drift-island-v1',JSON.stringify({fish:appState.fish,catches:appState.catches}))}catch{}}
+let toastTimer;
+function toast(text,duration=3500){$('#toastText').textContent=text;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),duration)}
+const supabaseConfig=window.DRIFT_SUPABASE||{};
+const supabaseReady=Boolean(supabaseConfig.url&&supabaseConfig.publishableKey);
+function supabaseHeaders(extra={}){return {'apikey':supabaseConfig.publishableKey,'Content-Type':'application/json',...extra}}
+function renderNotes(notes){let feed=$('#noteFeed');feed.innerHTML='';if(!notes.length){feed.innerHTML='<div class="note-empty">岸边还很安静，来留下第一张便签吧。</div>';return}let format=new Intl.DateTimeFormat('zh-CN',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});for(let note of notes){let item=document.createElement('article'),body=document.createElement('p'),time=document.createElement('time');item.className='note-item';body.textContent=note.content;time.dateTime=note.created_at;time.textContent=format.format(new Date(note.created_at));item.append(body,time);feed.appendChild(item)}}
+async function loadNotes(){let feed=$('#noteFeed');if(!supabaseReady){feed.innerHTML='<div class="note-empty">留言功能正在配置中，请稍后再来。</div>';return}feed.innerHTML='<div class="note-empty">正在听海风捎来消息…</div>';try{let url=`${supabaseConfig.url}/rest/v1/drift_messages?select=id,content,created_at&is_visible=eq.true&order=created_at.desc&limit=8`,response=await fetch(url,{headers:supabaseHeaders()});if(!response.ok)throw Error(`HTTP ${response.status}`);renderNotes(await response.json())}catch(err){console.error('Unable to load notes',err);feed.innerHTML='<div class="note-empty">海风暂时没有回应，请稍后再试。</div>'}}
+async function submitNote(){let input=$('#noteInput'),button=$('#noteForm .note-save'),content=input.value.trim().slice(0,120);if(!content||$('#noteWebsite').value)return;if(!supabaseReady){toast('留言功能还没有完成配置。');return}let last=Number(localStorage.getItem('drift-last-note')||0);if(Date.now()-last<30000){toast('让海风歇一会儿，30 秒后再留下一张便签。');return}button.disabled=true;button.textContent='正在交给海风…';try{let response=await fetch(`${supabaseConfig.url}/rest/v1/drift_messages`,{method:'POST',headers:supabaseHeaders({'Prefer':'return=minimal'}),body:JSON.stringify({content})});if(!response.ok)throw Error(`HTTP ${response.status}`);localStorage.setItem('drift-last-note',String(Date.now()));input.value='';toast('便签已经留在岸边。');await loadNotes()}catch(err){console.error('Unable to save note',err);toast('海风暂时没有收下便签，请稍后再试。')}finally{button.disabled=false;button.textContent='留在这座小岛'}}
+function openNoteDialog(){$('#noteInput').value='';openDialog('noteDialog');loadNotes()}
+let audioContext=null,waveGain=null,audioMaster=null;
+async function toggleSound(){try{
+ if(!audioContext){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)throw Error('unsupported');audioContext=new AC();let buffer=audioContext.createBuffer(1,audioContext.sampleRate*6,audioContext.sampleRate),d=buffer.getChannelData(0),v=0;for(let i=0;i<d.length;i++){v=(v+Math.random()*.08-.04)*.995;d[i]=v*2.2}let src=audioContext.createBufferSource();src.buffer=buffer;src.loop=true;let lp=audioContext.createBiquadFilter();lp.type='lowpass';lp.frequency.value=950;waveGain=audioContext.createGain();waveGain.gain.value=.1;audioMaster=audioContext.createGain();audioMaster.gain.value=0;src.connect(lp).connect(waveGain).connect(audioMaster).connect(audioContext.destination);src.start();}
+ await audioContext.resume();appState.sound=!appState.sound;audioMaster.gain.setTargetAtTime(appState.sound?.32:0,audioContext.currentTime,.35);$('#soundButton').setAttribute('aria-pressed',String(appState.sound));$('#soundButton').title=appState.sound?'关闭海浪声音（M）':'开启海浪声音（M）';$('#soundOn').style.display=appState.sound?'block':'none';$('#soundOff').style.display=appState.sound?'none':'block';toast(appState.sound?'海浪的声音，刚好。':'已关闭声音');
+ }catch{toast('这个浏览器暂时无法播放声音，其余互动可以照常使用。')}}
+function chime(kind='soft'){if(!appState.sound||!audioContext)return;let t=audioContext.currentTime;let notes=kind==='catch'?[523.25,659.25,783.99]:kind==='bird'?[780,1040]:[440,554.37];notes.forEach((f,i)=>{let o=audioContext.createOscillator(),g=audioContext.createGain();o.type='sine';o.frequency.setValueAtTime(f,t+i*.085);g.gain.setValueAtTime(0,t+i*.085);g.gain.linearRampToValueAtTime(.035,t+i*.085+.025);g.gain.exponentialRampToValueAtTime(.001,t+i*.085+.8);o.connect(g).connect(audioMaster);o.start(t+i*.085);o.stop(t+i*.085+.85)})}
+function openDialog(id){let d=$('#'+id);if(d.open)d.close();else d.showModal()}
+function updateJournal(){let count=new Set(appState.fish).size;$('#journalCount').textContent=count;$('#journalProgress').textContent=`${count} / 6`;$('#catchTotal').textContent=appState.catches;$('#fishGrid').innerHTML='';for(let [i,f]of fishSpecies.entries()){let found=appState.fish.includes(i),el=document.createElement('div');el.className='fish-tile'+(found?' found':'');el.innerHTML=`<div class="fish-illustration" style="--fish-color:${found?f.color:'#bdc2b6'}"><svg viewBox="0 0 100 60" aria-hidden="true"><path d="M15 30Q37 4 67 25L88 10 82 31 89 50 65 37Q36 59 15 30Z" fill="currentColor"/><path d="M40 14L57 6 57 18M43 45L55 53 57 42" fill="currentColor"/><circle cx="31" cy="27" r="3" fill="#f7eedb"/><path d="M43 22q8 10 0 18" fill="none" stroke="#f7eedb" stroke-width="2" opacity=".6"/></svg>${found?'':'<span>?</span>'}</div><strong>${found?f.name:'尚未邂逅'}</strong><small>${found?f.kind:'等待海风捎来'}</small>`;$('#fishGrid').appendChild(el)}}
+function setTime(mode){appState.time=mode;$$('[data-time]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.time===mode)));let labels={sunset:['日落微风','17:42'],dawn:['清晨潮汐','06:18'],night:['月色轻柔','21:06']};$('#weatherWord').textContent=labels[mode][0];$('#clock').textContent=labels[mode][1];$('#timeWord').textContent={sunset:'日落',dawn:'清晨',night:'月夜'}[mode];chime();}
+function lighting(dt){let colors={sunset:{sun:[2.10,.86,.70],ambient:[.25,.22,.40],pos:[-10,15,8],night:0},dawn:{sun:[1.38,1.43,1.25],ambient:[.46,.59,.65],pos:[-9,20,-5],night:0},night:{sun:[.22,.30,.58],ambient:[.12,.17,.28],pos:[-5,15,3],night:1}};let v=colors[appState.time],s=1-Math.exp(-dt*1.8);engine.sunColor=engine.sunColor.map((x,i)=>mix(x,v.sun[i],s));engine.ambient=engine.ambient.map((x,i)=>mix(x,v.ambient[i],s));engine.sunPos=engine.sunPos.map((x,i)=>mix(x,v.pos[i],s));engine.day=mix(engine.day,v.night,s);engine.fire=mix(engine.fire,appState.fire?1:0,s);}
+function interact(h){switch(h.type){
+ case 'fire':appState.fire=!appState.fire;h.label=appState.fire?'篝火 · 点击熄灭':'篝火 · 点击点燃';toast(appState.fire?'火又燃起来了，坐一会儿吧。':'篝火休息了。再点一下，就能重新点燃。');chime();break;
+ case 'boat':h.object.cruise=1;h.object.progress=0;addRipple(h.object.x,h.object.z);toast(h.object.tug?'小拖船出发了，绕着海湾兜兜风。':'轻轻推一下，让小船漂一会儿。');chime();break;
+ case 'flamingo':flamingo.to+=TAU;burstAt([-5.65,1.1,-1.35],[1,.63,.70],12);toast('一只很会享受假期的火烈鸟，向你转了个圈。');chime('bird');break;
+ case 'chest':chestLid.to=chestLid.to<-.5?0:-1.4;if(chestLid.to<-.5){burstAt([2.6,1.6,2],[1,.82,.35],28);toast('宝箱里装着：几枚贝壳，和一个无所事事的下午。');chime('catch')}else toast('把这个下午，好好收起来。');break;
+ case 'bar':burstAt([-2.1,2.1,-1.3],[1,.80,.57],14);toast('今日特调：日落苏打。慢慢喝，海风会等你。',4200);chime();break;
+ case 'sign':openNoteDialog();break;
+ }}
+function pick(x,y){let {origin,dir}=engine.ray(x,y),best=null,near=1e9;for(let h of sceneState.hotspots){let pos=h.object?.current||h.pos,v=V.sub(origin,pos),b=V.dot(v,dir),c=V.dot(v,v)-h.r*h.r,d=b*b-c;if(d<0)continue;let t=-b-Math.sqrt(d);if(t>0&&t<near){near=t;best=h}}return best}
+function resetView(){let c=engine.camera;c.azTo=.26;c.elTo=.89;c.zoomTo=1;c.auto=false;$('#orbitButton').setAttribute('aria-pressed','false');toast('回到最初的海湾。')}
+function initPointer(){let points=new Map(),drag=null,pinch=0,pinchZoom=1;let canvas=engine.canvas;
+ canvas.addEventListener('pointerdown',e=>{if(e.button!==0)return;points.set(e.pointerId,{x:e.clientX,y:e.clientY});canvas.setPointerCapture(e.pointerId);if(points.size===1)drag={x:e.clientX,y:e.clientY,az:engine.camera.azTo,el:engine.camera.elTo,moved:false};if(points.size===2){let p=[...points.values()];pinch=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);pinchZoom=engine.camera.zoomTo;if(drag)drag.moved=true}canvas.classList.add('dragging');$('#tooltip').hidden=true;});
+ canvas.addEventListener('pointermove',e=>{if(points.has(e.pointerId)){points.set(e.pointerId,{x:e.clientX,y:e.clientY});if(points.size===2){let p=[...points.values()],d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);engine.camera.zoomTo=clamp(pinchZoom*d/Math.max(1,pinch),.65,2.6);return}if(drag){let dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.hypot(dx,dy)>5)drag.moved=true;if(drag.moved){engine.camera.azTo=drag.az-dx*.005;engine.camera.elTo=clamp(drag.el+dy*.004,.48,1.26);engine.camera.auto=false;$('#orbitButton').setAttribute('aria-pressed','false')}}}
+ else if(e.pointerType==='mouse'){let h=pick(e.clientX,e.clientY),tip=$('#tooltip');canvas.style.cursor=h?'pointer':'grab';if(h&&!appState.immersive){tip.textContent=h.label;tip.style.left=Math.min(e.clientX+15,innerWidth-210)+'px';tip.style.top=Math.min(e.clientY+18,innerHeight-65)+'px';tip.hidden=false}else tip.hidden=true;}});
+ const end=e=>{let wasDrag=drag?.moved;if(points.size===1&&drag&&!wasDrag&&e.type==='pointerup'){let h=pick(e.clientX,e.clientY);if(h)interact(h);else{let p=engine.waterPoint(e.clientX,e.clientY);if(Math.hypot(p[0],p[2])>5.1){addRipple(p[0],p[2]);chime()}}}points.delete(e.pointerId);if(points.size===0){drag=null;canvas.classList.remove('dragging')}else if(points.size===1){let p=[...points.values()][0];drag={x:p.x,y:p.y,az:engine.camera.azTo,el:engine.camera.elTo,moved:true}}};canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);canvas.addEventListener('pointerleave',()=>$('#tooltip').hidden=true);
+ canvas.addEventListener('wheel',e=>{e.preventDefault();engine.camera.zoomTo=clamp(engine.camera.zoomTo*Math.exp(-e.deltaY*.001),.65,2.6)},{passive:false});canvas.addEventListener('contextmenu',e=>e.preventDefault());
+}
+function updateDynamicMesh(o,b){let gl=engine.gl;gl.bindBuffer(gl.ARRAY_BUFFER,o.buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(b.data),gl.DYNAMIC_DRAW);o.count=b.data.length/12;}
+function initFishing(){let b=new Builder();b.sphere([0,.022,0],[.075,.08,.075],'#f2dfc6',9,5);b.sphere([0,.084,0],[.053,.060,.053],'#e77971',9,5);b.rod([0,.08,0],[0,.21,0],.007,'#daa779',5);bobber=b.build();bobber.visible=false;bobber.shadow=false;fishingLine=new Builder().build();fishingLine.shadow=false;fishingLine.visible=false;}
+function fishClick(){if(appState.fishing==='bite'){catchFish();return}if(appState.fishing!=='idle')return;appState.fishing='casting';appState.fishTimer=0;appState.biteAt=rand(2.7,4.3);$('#fishLabel').textContent='抛竿中…';$('#fishButton').disabled=true;bobber.visible=true;fishingLine.visible=true;$('#catchCard').hidden=true;toast('浮漂已经入海。等它动起来，再收竿。',3000);chime();}
+function finishFishing(){appState.fishing='idle';appState.fishTimer=0;$('#fishLabel').textContent='去钓鱼';$('#fishButton').disabled=false;$('#fishButton').classList.remove('bite');bobber.visible=false;fishingLine.visible=false;}
+function catchFish(){let roll=Math.random(),idx=roll<.32?0:roll<.57?1:roll<.76?2:roll<.9?3:roll<.975?4:5;if(appState.time==='night'&&Math.random()<.32)idx=4;let f=fishSpecies[idx],isNew=!appState.fish.includes(idx);if(isNew)appState.fish.push(idx);appState.catches++;save();updateJournal();$('#catchName').textContent=f.name;$('#catchEnglish').textContent=f.en;$('#catchSize').textContent=(f.size[0]+Math.random()*(f.size[1]-f.size[0])).toFixed(1)+' cm';$('#catchNew').textContent=isNew?'NEW DISCOVERY · 新发现':'HELLO AGAIN · 又见面了';$('#catchFish').style.color=f.color;$('#catchCard').hidden=false;burstAt([-.38,.35,10.0],rgb('#ffe3a2').map(x=>Math.pow(x,1/2.2)),24);finishFishing();chime('catch');toast('已记入海湾图鉴。拍完照，就让它回到海里。',4100);}
+function animateFishing(dt,t){if(appState.fishing==='idle')return;appState.fishTimer+=dt;let q=appState.fishTimer;const start=[-1.30,1.63,8.88],target=[-.38,.075,10.0];let p=target.slice();
+ if(appState.fishing==='casting'){let f=clamp(q/.85,0,1);p=start.map((v,i)=>mix(v,target[i],f));p[1]+=Math.sin(f*Math.PI)*1.1;if(f>=1){appState.fishing='waiting';appState.fishTimer=0;$('#fishLabel').textContent='等鱼上钩';addRipple(target[0],target[2],.6)}}
+ if(appState.fishing==='waiting'){p[1]+=.02*Math.sin(t*3);if(q>=appState.biteAt){appState.fishing='bite';appState.fishTimer=0;$('#fishLabel').textContent='收竿！';$('#fishButton').disabled=false;$('#fishButton').classList.add('bite');toast('咬钩了！现在点击「收竿」！',4000);chime('bird')}}
+ if(appState.fishing==='bite'){p[1]+=.065*Math.sin(t*18);p[0]+=.035*Math.sin(t*24);if(Math.random()<dt*7)addRipple(p[0],p[2],.36);if(q>5.5){finishFishing();toast('鱼轻轻游走了。没关系，再抛一竿。');return}}
+ bobber.matrix=M.tr(...p);let b=new Builder(),prev=start;for(let i=1;i<=22;i++){let f=i/22,point=start.map((v,j)=>mix(v,p[j],f));point[1]-=Math.sin(f*Math.PI)*.24;b.rod(prev,point,.0033,'#e3d0ad',3);prev=point}updateDynamicMesh(fishingLine,b);
+}
+function toggleImmersive(){appState.immersive=!appState.immersive;document.body.classList.toggle('immersive',appState.immersive);$('#exitImmersive').hidden=!appState.immersive;$('#tooltip').hidden=true;}
+function takePhoto(){try{let c=document.createElement('canvas');c.width=engine.canvas.width;c.height=engine.canvas.height;let ctx=c.getContext('2d');ctx.drawImage(engine.canvas,0,0);let s=c.width/1440;ctx.fillStyle='#f6dfbd';ctx.font=`${30*s}px Georgia,serif`;ctx.fillText('DRIFT',44*s,58*s);ctx.font=`${10*s}px sans-serif`;ctx.fillText('A LITTLE LOST. A LITTLE FOUND.',44*s,80*s);ctx.textAlign='right';ctx.fillStyle='rgba(246,223,189,.7)';ctx.font=`${11*s}px sans-serif`;ctx.fillText('TAKE A BREATH.  /  漂流小岛',c.width-36*s,c.height-35*s);c.toBlob(blob=>{if(!blob){toast('截图暂时失败，请重新尝试。');return}let a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download='drift-island-'+new Date().toISOString().slice(0,10)+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);toast('明信片已生成，留下这一刻的海风。')},'image/png')}catch{toast('浏览器阻止了图片保存，请用系统截图保留这一刻。')}}
+function bindUI(){
+ $('#fishButton').addEventListener('click',fishClick);$('#journalButton').addEventListener('click',()=>{updateJournal();openDialog('journalDialog')});$('#moodButton').addEventListener('click',()=>openDialog('moodDialog'));$('#helpButton').addEventListener('click',()=>openDialog('helpDialog'));$('#soundButton').addEventListener('click',toggleSound);$('#photoButton').addEventListener('click',takePhoto);$('#resetButton').addEventListener('click',resetView);$('#zoomIn').addEventListener('click',()=>engine.camera.zoomTo=clamp(engine.camera.zoomTo*1.2,.65,2.6));$('#zoomOut').addEventListener('click',()=>engine.camera.zoomTo=clamp(engine.camera.zoomTo/1.2,.65,2.6));$('#orbitButton').addEventListener('click',()=>{engine.camera.auto=!engine.camera.auto;$('#orbitButton').setAttribute('aria-pressed',String(engine.camera.auto));toast(engine.camera.auto?'让镜头慢慢环游小岛。':'镜头停下了。')});$('#immersiveButton').addEventListener('click',toggleImmersive);$('#exitImmersive').addEventListener('click',toggleImmersive);
+ $$('[data-close]').forEach(b=>b.addEventListener('click',()=>$('#'+b.dataset.close).close()));$$('dialog').forEach(d=>d.addEventListener('click',e=>{if(e.target===d){let r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close()}}));$$('[data-time]').forEach(b=>b.addEventListener('click',()=>setTime(b.dataset.time)));
+ $('#windRange').addEventListener('input',e=>{engine.wind=+e.target.value;$('#windValue').textContent=engine.wind<.4?'很轻':engine.wind<1.1?'刚好':'起风了'});$('#motionSwitch').addEventListener('change',e=>{appState.motion=e.target.checked});$('#noteForm').addEventListener('submit',async e=>{e.preventDefault();await submitNote()});$('#catchClose').addEventListener('click',()=>$('#catchCard').hidden=true);$('#releaseFish').addEventListener('click',()=>{$('#catchCard').hidden=true;addRipple(-.38,10,.8);toast('它回到了海里。你的图鉴里，留下了这次相遇。')});
+ window.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName)||$$('dialog').some(d=>d.open))return;let k=e.key.toLowerCase();if(k==='r')resetView();if(k==='h')toggleImmersive();if(k==='m')toggleSound();if(k==='f')fishClick();if(k==='escape'&&appState.immersive)toggleImmersive()});
+ updateJournal();if(matchMedia('(prefers-reduced-motion: reduce)').matches){appState.motion=false;$('#motionSwitch').checked=false}
+}
+let lastFrame=0,totalTime=0,lastWasHidden=false;
+function frame(now){requestAnimationFrame(frame);let realDt=Math.min((now-lastFrame)/1000||.016,.5),dt=Math.min(realDt,.08);lastFrame=now;if(document.hidden){lastWasHidden=true;return}if(lastWasHidden){lastWasHidden=false;dt=0;realDt=0}totalTime+=realDt;sceneTime+=dt*(appState.motion?1:0);engine.time=sceneTime;lighting(realDt);animateScene(dt,sceneTime);animateFishing(realDt,totalTime);if(waveGain&&appState.sound)waveGain.gain.value=.10+Math.sin(totalTime*.32)*.04;engine.render(dt);$('#compassNeedle').style.transform=`rotate(${-engine.camera.az*180/Math.PI}deg)`;}
+function boot(){try{initScene();initPointer();initFishing();bindUI();engine.render(.016);requestAnimationFrame(frame);setTimeout(()=>{$('#loading').classList.add('done');setTimeout(()=>$('#loading').remove(),650);toast('这座小岛，没有待办事项。',3800)},350);window.__island.ready=true;}catch(err){console.error(err);$('#loadTitle').textContent='海湾暂时没能出现';$('#loadSubtitle').textContent=err.message;$('#loading').classList.add('error');$('#retryButton').hidden=false}}
+boot();
+</script>
+</body></html>
