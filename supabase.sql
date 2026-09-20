@@ -7,7 +7,7 @@ create table if not exists public.drift_messages (
     char_length(btrim(content)) between 1 and 120
   ),
   created_at timestamptz not null default now(),
-  is_visible boolean not null default false
+  is_visible boolean not null default true
 );
 
 alter table public.drift_messages enable row level security;
@@ -29,7 +29,7 @@ on public.drift_messages
 for insert
 to anon, authenticated
 with check (
-  is_visible = false
+  is_visible = true
   and char_length(btrim(content)) between 1 and 120
 );
 
